@@ -7,9 +7,9 @@ authors = ["tegelaer <maarten.tegelaers@deltares.nl>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 pydantic = "^1.8.2"
-fastapi = "^0.70.1"
-graphene = "^3.0"
+fastapi = {extras = ["all"], version = "^0.70.1"}
 hydrolib-core = "^0.2.0"
+strawberry-graphql = {extras = ["fastapi"], version = "^0.93.10"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

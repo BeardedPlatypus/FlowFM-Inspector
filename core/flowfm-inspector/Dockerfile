@@ -48,10 +48,10 @@ RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/inst
 
 # copy project requirement files here to ensure they will be cached.
 WORKDIR $PYSETUP_PATH
-# COPY poetry.lock pyproject.toml ./
+COPY poetry.lock pyproject.toml ./
 
 # install runtime deps - uses $POETRY_VIRTUALENVS_IN_PROJECT internally
-# RUN poetry install --no-dev --no-root
+RUN poetry install --no-dev --no-root
 
 
 # `development` image is used during development / testing
@@ -69,7 +69,7 @@ COPY --from=builder-base $POETRY_HOME $POETRY_HOME
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
 
 # quicker install as runtime deps are already installed
-# RUN poetry install --no-root
+RUN poetry install --no-root
 
 # will become mountpoint of our code
 WORKDIR /app
