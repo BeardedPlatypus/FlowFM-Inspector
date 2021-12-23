@@ -2,23 +2,57 @@ import * as React from "react"
 
 import Layout from "../components/layout"
 import "../styles/global.scss"
+import * as styles from "./index.module.scss"
+
+
+function InputBooleanElement(data) {
+  // TODO: add name
+  return (
+    <div className="control is-expanded is-fullwidth">
+      <div className="select is-fullwidth">
+        <select className="is-fullwidth has-text-right">
+          <option value={true} selected={data.value}>True</option>
+          <option value={false} selected={!data.value}>False</option>
+        </select>
+      </div>
+    </div>
+  )
+}
+
+
+function InputStringElement(data) {
+  return (
+    <div className="control is-expanded is-fullwidth">
+      <input className="input has-text-right" value={data.value} />
+    </div>
+  )
+}
+
+
+function InputElement(data) {
+  switch (data.valueType) {
+    case "boolean":
+      return InputBooleanElement(data)
+    case "string":
+    default:
+      return InputStringElement(data)
+  }
+}
 
 
 function TableRow(props) {
   return (
     <tr key={`Table_${props.table}_${props.key}`}>
-      <td>{props.key}</td>
-      <td><input className="input" value={props.value} /></td>
-      <td><input className="input" value={(props.comment === undefined) ? "" : props.comment} /></td>
+      <td className={styles.keyColumn}>{props.key}</td>
+      <td className={styles.valueColumn}>{InputElement(props)}</td>
+      <td className={styles.commentColumn}><input className="input" value={(props.comment === undefined) ? "" : props.comment} /></td>
     </tr>
   )
 }
 
-
 function RetrieveHeader(data) {
   return data.title;
 }
-
 
 function MapToRow(table, [key, value]) {
   return {
@@ -33,14 +67,13 @@ function RetrieveRows(data) {
   return Object.entries(data.properties).map(v => MapToRow(data.title, v));
 }
 
-const general_schema = new URL("http://localhost:8000/api/schema/general");
-
 function Table(props) {
   const [tableHeader, setTableHeader] = React.useState("")
   const [tableRows, setTableRows] = React.useState([])
 
   React.useEffect(() => {
-    console.log(props.schema_location);
+    console.log(props.schema_location)
+
     fetch(props.schema_location)
       .then(response => response.json())
       .then(data => {
@@ -50,7 +83,6 @@ function Table(props) {
 
   }, []);
 
-
   return (
     <div key={`Table_${tableHeader}`}>
       <h2 className="subtitle is-5">{tableHeader}</h2>
@@ -58,9 +90,9 @@ function Table(props) {
         <table className="table is-hoverable is-fullwidth">
           <thead>
             <tr>
-              <th>Key</th>
-              <th>Value</th>
-              <th>Comment</th>
+              <th className={styles.keyColumn}>Key</th>
+              <th className={styles.valueColumn}>Value</th>
+              <th className={styles.commentColumn}>Comment</th>
             </tr>
           </thead>
           <tbody>
@@ -72,38 +104,31 @@ function Table(props) {
   );
 }
 
-
-/*
-const rows = [
-  { key: "fileVersion", value: "1.09" },
-  { key: "fileType", value: "modelDef" },
-  { key: "program", value: "D-Flow FM" },
-  { key: "version", value: "1.2.94.66079M" },
-  { key: "autoStart", value: false },
-  { key: "pathsRelativeToParent", value: false },
+const tables = [
+  "general",
+  "volumetables",
+  "numerics",
+  "physics",
+  "sediment",
+  "waves",
+  "time",
+  "restart",
+  "external_forcing",
+  "hydrology",
+  "trachytopes",
+  "output",
 ]
-*/
-
-
-/*
-const placeholder_data = {
-  "title": "General",
-  "properties": {
-    "fileVersion": { "title": "Fileversion", "default": "1.09", "type": "string" },
-    "fileType": { "title": "Filetype", "default": "modelDef", "enum": ["modelDef"], "type": "string" },
-    "program": { "title": "Program", "default": "D-Flow FM", "type": "string" },
-    "version": { "title": "Version", "default": "1.2.94.66079M", "type": "string" },
-    "autoStart": { "title": "Autostart", "default": false, "type": "boolean" },
-    "pathsRelativeToParent": { "title": "Pathsrelativetoparent", "default": false, "type": "boolean" }
-  },
-}
-*/
-
 
 const IndexPage = () => (
   <Layout>
     <div className="column">
-      <Table schema_location={general_schema} />
+      {
+        tables.map(table_name => {
+          return (
+            <Table schema_location={new URL(`http://localhost:8000/api/schema/${table_name}`)} />
+          )
+        })
+      }
     </div>
   </Layout>
 )

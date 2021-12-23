@@ -15,8 +15,10 @@ const Layout = ({ children }) => {
   return (
     <div>
       <section className="section">
-        <div className="columns">
-          {children}
+        <div className="container">
+          <div className="columns">
+            {children}
+          </div>
         </div>
       </section>
 
