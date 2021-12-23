@@ -5,9 +5,18 @@ import "../styles/global.scss"
 import * as styles from "./index.module.scss"
 
 
+function InputNumberElement(data) {
+  // TODO: add a separate integer.
+  return (
+    <div className="control is-expanded is-fullwidth">
+      <input className="input has-text-right" value={data.value} type="number" />
+    </div>
+  )
+}
+
+
 function InputEnumElement(data) {
   // TODO: add name
-  console.log(data)
   return (
     <div className="control is-expanded is-fullwidth">
       <div className="select is-fullwidth">
@@ -47,6 +56,9 @@ function InputStringElement(data) {
 
 function InputElement(data) {
   switch (data.valueType) {
+    case "number":
+    case "integer":
+      return InputNumberElement(data)
     case "boolean":
       return InputBooleanElement(data)
     case "enum":
@@ -104,7 +116,7 @@ function Table(props) {
   }, []);
 
   return (
-    <div key={`Table_${tableHeader}`}>
+    <div key={`Table_${tableHeader}`} className="pt-6">
       <h2 className="subtitle is-5">{tableHeader}</h2>
       <div className="table-container">
         <table className="table is-hoverable is-fullwidth">
