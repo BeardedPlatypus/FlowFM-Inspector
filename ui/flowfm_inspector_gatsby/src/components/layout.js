@@ -16,9 +16,7 @@ const Layout = ({ children }) => {
     <div>
       <section className="section">
         <div className="columns">
-          <div className="column">
-            {children}
-          </div>
+          {children}
         </div>
       </section>
 

@@ -1,6 +1,5 @@
 import * as React from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircle } from "@fortawesome/free-solid-svg-icons"
 import { faGithubAlt } from "@fortawesome/free-brands-svg-icons";
 
 import "../styles/global.scss"
@@ -8,7 +7,7 @@ import * as styles from "./footer.module.scss"
 
 function SocialButton(props) {
   return (
-    <a href={props.link} target="_blank">
+    <a href={props.link} target="_blank" rel="noreferrer">
       <span className="fa-layers fa-fw fa-2x has-text-white">
         <FontAwesomeIcon icon={props.icon} transform="shrink-5" />
       </span>
