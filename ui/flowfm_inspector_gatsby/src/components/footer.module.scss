@@ -1,7 +1,16 @@
-//@import "../styles/global.scss";
+.social-button {
+    float: none;
+    display: inline-block;
+    padding-left: 1px;
+    padding-right: 1px;
+    > a {
+        padding: 0px 0px;
 
-
-
+        &:hover {
+            color: #DE5234;
+        }
+    }
+}
 
 .sticky-footer {
     position: absolute;
