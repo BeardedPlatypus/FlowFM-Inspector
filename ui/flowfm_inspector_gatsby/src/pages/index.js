@@ -5,6 +5,24 @@ import "../styles/global.scss"
 import * as styles from "./index.module.scss"
 
 
+function InputEnumElement(data) {
+  // TODO: add name
+  console.log(data)
+  return (
+    <div className="control is-expanded is-fullwidth">
+      <div className="select is-fullwidth">
+        <select className="is-fullwidth has-text-right">
+          {data.enumValues.map(v => {
+            return (
+              <option key={String(v)} value={v} selected={v === data.value}>{v}</option>
+            )
+          })}
+        </select>
+      </div>
+    </div>
+  )
+}
+
 function InputBooleanElement(data) {
   // TODO: add name
   return (
@@ -19,26 +37,25 @@ function InputBooleanElement(data) {
   )
 }
 
-
 function InputStringElement(data) {
   return (
     <div className="control is-expanded is-fullwidth">
-      <input className="input has-text-right" value={data.value} />
+      <input className="input has-text-right" value={data.value} type="text" />
     </div>
   )
 }
-
 
 function InputElement(data) {
   switch (data.valueType) {
     case "boolean":
       return InputBooleanElement(data)
+    case "enum":
+      return InputEnumElement(data)
     case "string":
     default:
       return InputStringElement(data)
   }
 }
-
 
 function TableRow(props) {
   return (
@@ -55,11 +72,14 @@ function RetrieveHeader(data) {
 }
 
 function MapToRow(table, [key, value]) {
+  const is_enum = "enum" in value
+
   return {
     table: table,
     key: key,
     value: value.default,
-    valueType: value.type
+    valueType: is_enum ? "enum" : value.type,
+    enumValues: value.enum,
   }
 }
 
