@@ -1,4 +1,4 @@
-from typing import Dict, Type
+from typing import Dict, Iterable, Type
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from hydrolib.core.io.mdu.models import (
@@ -47,9 +47,25 @@ async def root():
 def get_sanitized_schema(model_type: Type) -> Dict:
     schema = dict(model_type.schema())
 
-    # Clean up the schema
-    if "properties" in schema and "comments" in schema["properties"]:
-        del schema["properties"]["comments"]
+    schema.pop("description", None)
+
+    if "properties" in schema:
+        schema["properties"].pop("comments", None)
+
+        # we assume that every ref is a reference to another file
+        # and as such replace it with a filepath.
+        referenced_properties: Iterable[str] = (
+            key for (key, value) in schema["properties"].items() if "$ref" in value
+        )
+
+        for key in referenced_properties:
+            print(key)
+            print(schema["properties"][key])
+            schema["properties"][key] = {
+                "title": key.capitalize(),
+                "type": "string",
+                "format": "path",
+            }
 
     return schema
 
