@@ -136,6 +136,9 @@ function Table(props) {
   );
 }
 
+
+const schema_url = "http://localhost:8000/api/schema"
+
 const tables = [
   "general",
   "volumetables",
@@ -145,7 +148,7 @@ const tables = [
   "waves",
   "time",
   "restart",
-  "external_forcing",
+  "externalforcing",
   "hydrology",
   "trachytopes",
   "output",
@@ -157,7 +160,7 @@ const IndexPage = () => (
       {
         tables.map(table_name => {
           return (
-            <Table schema_location={new URL(`http://localhost:8000/api/schema/${table_name}`)} />
+            <Table schema_location={new URL(`${schema_url}/mdu:${table_name}`)} />
           )
         })
       }

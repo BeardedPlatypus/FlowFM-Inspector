@@ -1,4 +1,4 @@
-from typing import Dict, Iterable, Type
+from typing import Dict, Iterable, List, Sequence, Type
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from hydrolib.core.io.mdu.models import (
@@ -16,6 +16,8 @@ from hydrolib.core.io.mdu.models import (
     VolumeTables,
     Waves,
 )
+from pydantic import BaseModel as PydanticBaseModel
+from pydantic.fields import Field
 
 
 app = FastAPI()
@@ -44,6 +46,31 @@ async def root():
     return model
 
 
+mdu_models = [
+    General,
+    VolumeTables,
+    Numerics,
+    Physics,
+    Sediment,
+    Waves,
+    Time,
+    Restart,
+    ExternalForcing,
+    Hydrology,
+    Trachytopes,
+    Output,
+]
+
+
+model_mapping: Dict[str, Dict[str, Type]] = {
+    "mdu": {m.__name__.lower(): m for m in mdu_models}
+}
+
+
+class BaseModel(PydanticBaseModel):
+    pass
+
+
 def get_sanitized_schema(model_type: Type) -> Dict:
     schema = dict(model_type.schema())
 
@@ -70,61 +97,11 @@ def get_sanitized_schema(model_type: Type) -> Dict:
     return schema
 
 
-@app.get("/api/schema/general")
-async def general_schema():
-    return get_sanitized_schema(General)
+def to_model(model_category: str, model_name: str) -> Type:
+    return model_mapping[model_category][model_name]
 
 
-@app.get("/api/schema/volumetables")
-async def volumetables_schema():
-    return get_sanitized_schema(VolumeTables)
-
-
-@app.get("/api/schema/numerics")
-async def numerics_schema():
-    return get_sanitized_schema(Numerics)
-
-
-@app.get("/api/schema/physics")
-async def physics_schema():
-    return get_sanitized_schema(Physics)
-
-
-@app.get("/api/schema/sediment")
-async def sediment_schema():
-    return get_sanitized_schema(Sediment)
-
-
-@app.get("/api/schema/waves")
-async def waves_schema():
-    return get_sanitized_schema(Waves)
-
-
-@app.get("/api/schema/time")
-async def time_schema():
-    return get_sanitized_schema(Time)
-
-
-@app.get("/api/schema/restart")
-async def restart_schema():
-    return get_sanitized_schema(Restart)
-
-
-@app.get("/api/schema/external_forcing")
-async def external_forcing_schema():
-    return get_sanitized_schema(ExternalForcing)
-
-
-@app.get("/api/schema/hydrology")
-async def hydrology_schema():
-    return get_sanitized_schema(Hydrology)
-
-
-@app.get("/api/schema/trachytopes")
-async def trachytopes_schema():
-    return get_sanitized_schema(Trachytopes)
-
-
-@app.get("/api/schema/output")
-async def output_schema():
-    return get_sanitized_schema(Output)
+@app.get("/api/schema/{model_schema}")
+async def request_schema(model_schema):
+    model_category, model_name = model_schema.split(":", 1)
+    return get_sanitized_schema(to_model(model_category, model_name))
