@@ -1,4 +1,8 @@
 import * as React from "react"
+import { useSpring, animated } from "react-spring"
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCaretDown } from '@fortawesome/free-solid-svg-icons'
 
 import Layout from "../components/layout"
 import "../styles/global.scss"
@@ -102,6 +106,7 @@ function RetrieveRows(data) {
 function Table(props) {
   const [tableHeader, setTableHeader] = React.useState("")
   const [tableRows, setTableRows] = React.useState([])
+  const [isCollapsed, setCollapsed] = React.useState(false)
 
   React.useEffect(() => {
     console.log(props.schema_location)
@@ -115,9 +120,29 @@ function Table(props) {
 
   }, []);
 
+  const { rotate } = useSpring({
+    to: { rotate: 0 },
+    from: { rotate: -90 },
+    reverse: isCollapsed,
+  })
+
   return (
     <div key={`Table_${tableHeader}`} className="pt-6">
-      <h2 className="subtitle is-5">{tableHeader}</h2>
+      <div className="level" onClick={() => setCollapsed(!isCollapsed)}>
+        <div className="level-left">
+          <div className="level-item">
+            <animated.div style={{ rotate }} on={isCollapsed}>
+              <FontAwesomeIcon icon={faCaretDown} />
+            </animated.div>
+          </div>
+
+          <div className="level-item">
+            <h2 className="subtitle is-5">{tableHeader}</h2>
+          </div>
+        </div>
+      </div>
+
+
       <div className="table-container">
         <table className="table is-hoverable is-fullwidth">
           <thead>
