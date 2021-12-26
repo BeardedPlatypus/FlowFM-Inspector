@@ -128,7 +128,7 @@ function Table(props) {
 
   return (
     <div key={`Table_${tableHeader}`} className="pt-6">
-      <div className="level" onClick={() => setCollapsed(!isCollapsed)}>
+      <button class="button is-white is-fullwidth has-text-left level" onClick={() => setCollapsed(!isCollapsed)}>
         <div className="level-left">
           <div className="level-item">
             <animated.div style={{ rotate }} on={isCollapsed}>
@@ -140,7 +140,7 @@ function Table(props) {
             <h2 className="subtitle is-5">{tableHeader}</h2>
           </div>
         </div>
-      </div>
+      </button>
 
 
       <div className="table-container">
