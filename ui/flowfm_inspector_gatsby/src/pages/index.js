@@ -141,6 +141,7 @@ const schema_url = "http://localhost:8000/api/schema"
 
 const tables = [
   "general",
+  "geometry",
   "volumetables",
   "numerics",
   "physics",
@@ -160,7 +161,7 @@ const IndexPage = () => (
       {
         tables.map(table_name => {
           return (
-            <Table schema_location={new URL(`${schema_url}/mdu:${table_name}`)} />
+            <Table schema_location={new URL(`${schema_url}/mdu/${table_name}`)} />
           )
         })
       }

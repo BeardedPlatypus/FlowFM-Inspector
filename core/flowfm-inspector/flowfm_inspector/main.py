@@ -1,10 +1,11 @@
-from typing import Dict, Iterable, List, Sequence, Type
+from typing import Dict, Iterable, Type
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from hydrolib.core.io.mdu.models import (
     ExternalForcing,
     FMModel,
     General,
+    Geometry,
     Hydrology,
     Numerics,
     Output,
@@ -16,9 +17,12 @@ from hydrolib.core.io.mdu.models import (
     VolumeTables,
     Waves,
 )
+from hydrolib.core.io.net.models import NetworkModel
 from pydantic import BaseModel as PydanticBaseModel
-from pydantic.fields import Field
 
+
+# The network is currently problematic and we do not want to load it.
+NetworkModel.__fields__.pop("network", None)
 
 app = FastAPI()
 
@@ -37,7 +41,6 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
-    # model = Weir(branchid="branch.001", chainage=0.5, crestlevel=1.0)
     model = FMModel().dict(
         exclude={
             "geometry",
@@ -48,6 +51,7 @@ async def root():
 
 mdu_models = [
     General,
+    Geometry,
     VolumeTables,
     Numerics,
     Physics,
@@ -101,7 +105,6 @@ def to_model(model_category: str, model_name: str) -> Type:
     return model_mapping[model_category][model_name]
 
 
-@app.get("/api/schema/{model_schema}")
-async def request_schema(model_schema):
-    model_category, model_name = model_schema.split(":", 1)
+@app.get("/api/schema/{model_category}/{model_name}")
+async def request_schema(model_category, model_name):
     return get_sanitized_schema(to_model(model_category, model_name))
