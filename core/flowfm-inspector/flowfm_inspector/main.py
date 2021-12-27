@@ -1,6 +1,8 @@
 from typing import Dict, Iterable, Type
+from uuid import uuid4
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from hydrolib.core.basemodel import FileModel
 from hydrolib.core.io.mdu.models import (
     ExternalForcing,
     FMModel,
@@ -19,6 +21,7 @@ from hydrolib.core.io.mdu.models import (
 )
 from hydrolib.core.io.net.models import NetworkModel
 from pydantic import BaseModel as PydanticBaseModel
+from pydantic.types import UUID4
 
 
 # The network is currently problematic and we do not want to load it.
@@ -66,13 +69,19 @@ mdu_models = [
 ]
 
 
-model_mapping: Dict[str, Dict[str, Type]] = {
+schema_mapping: Dict[str, Dict[str, Type]] = {
     "mdu": {m.__name__.lower(): m for m in mdu_models}
 }
 
 
 class BaseModel(PydanticBaseModel):
     pass
+
+
+initial_uuid = uuid4()
+initial_model = FMModel()
+
+model_mapping: Dict[UUID4, FileModel] = {initial_uuid: initial_model}
 
 
 def get_sanitized_schema(model_type: Type) -> Dict:
@@ -102,9 +111,20 @@ def get_sanitized_schema(model_type: Type) -> Dict:
 
 
 def to_model(model_category: str, model_name: str) -> Type:
-    return model_mapping[model_category][model_name]
+    return schema_mapping[model_category][model_name]
 
 
 @app.get("/api/schema/{model_category}/{model_name}")
 async def request_schema(model_category, model_name):
     return get_sanitized_schema(to_model(model_category, model_name))
+
+
+@app.get("/api/models")
+async def request_model_keys():
+    return {"models": list(model_mapping.keys())}
+
+
+@app.get("/api/models/{id}")
+async def request_specific_model(id: UUID4):
+    # TODO: make this more generic with a separate function
+    return model_mapping[id].dict(exclude={"geometry": {"netfile": {"network"}}})
