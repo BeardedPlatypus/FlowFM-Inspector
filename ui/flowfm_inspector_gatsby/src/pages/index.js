@@ -14,7 +14,7 @@ function InputNumberElement(data) {
   // TODO: add a separate integer.
   return (
     <div className="control is-expanded is-fullwidth">
-      <input className="input has-text-right" value={data.value} type="number" />
+      <input className="input has-text-right" defaultValue={data.value} type="number" />
     </div>
   )
 }
@@ -25,10 +25,10 @@ function InputEnumElement(data) {
   return (
     <div className="control is-expanded is-fullwidth">
       <div className="select is-fullwidth">
-        <select className="is-fullwidth has-text-right">
+        <select className="is-fullwidth has-text-right" defaultValue={data.value}>
           {data.enumValues.map(v => {
             return (
-              <option key={String(v)} value={v} selected={v === data.value}>{v}</option>
+              <option key={String(v)} value={v}>{v}</option>
             )
           })}
         </select>
@@ -42,9 +42,9 @@ function InputBooleanElement(data) {
   return (
     <div className="control is-expanded is-fullwidth">
       <div className="select is-fullwidth">
-        <select className="is-fullwidth has-text-right">
-          <option value={true} selected={data.value}>True</option>
-          <option value={false} selected={!data.value}>False</option>
+        <select className="is-fullwidth has-text-right" defaultValue={data.value}>
+          <option value={true}>True</option>
+          <option value={false}>False</option>
         </select>
       </div>
     </div>
@@ -54,7 +54,7 @@ function InputBooleanElement(data) {
 function InputStringElement(data) {
   return (
     <div className="control is-expanded is-fullwidth">
-      <input className="input has-text-right" value={data.value} type="text" />
+      <input className="input has-text-right" defaultValue={data.value} type="text" />
     </div>
   )
 }
@@ -79,7 +79,7 @@ function TableRow(props) {
     <tr key={`Table_${props.table}_${props.key}`}>
       <td className={styles.keyColumn}>{props.key}</td>
       <td className={styles.valueColumn}>{InputElement(props)}</td>
-      <td className={styles.commentColumn}><input className="input" value={(props.comment === undefined) ? "" : props.comment} /></td>
+      <td className={styles.commentColumn}><input className="input" defaultValue={(props.comment === undefined) ? "" : props.comment} /></td>
     </tr>
   )
 }
@@ -111,8 +111,6 @@ function Table(props) {
 
 
   React.useEffect(() => {
-    console.log(props.schema_location)
-
     fetch(props.schema_location)
       .then(response => response.json())
       .then(data => {
@@ -140,12 +138,12 @@ function Table(props) {
   }
 
   return (
-    <div key={`Table_${tableHeader}`} className="pt-5">
-      <div class="box p-0" >
-        <button class="button is-white is-fullwidth has-text-left level" onClick={handleClick}>
-          <div className="level-left pl-2">
+    <div className="pt-3">
+      <div className="box p-0" >
+        <button className="button is-white is-fullwidth has-text-left level m-0 is-medium" onClick={handleClick}>
+          <div className="level-left m-2 p-2">
             <div className="level-item pr-1">
-              <animated.div style={{ rotate }} on={isCollapsed}>
+              <animated.div style={{ rotate }} on={{ isCollapsed }}>
                 <FontAwesomeIcon icon={faCaretDown} />
               </animated.div>
             </div>
@@ -156,8 +154,8 @@ function Table(props) {
           </div>
         </button>
 
-        <animated.div style={{ overflow: 'hidden', opacity, transform, height }} on={isCollapsed}>
-          <div className="table-container ml-6 mr-6 pb-4" style={{ position: 'relative' }}>
+        <animated.div style={{ overflow: 'hidden', opacity, transform, height }} on={{ isCollapsed }}>
+          <div className="table-container ml-6 mr-6 pb-4 pt-4" style={{ position: 'relative' }}>
             {resizeListener}
             <table className="table is-hoverable is-fullwidth">
               <thead>
@@ -177,7 +175,6 @@ function Table(props) {
     </div>
   );
 }
-
 
 const schema_url = "http://localhost:8000/api/schema"
 
@@ -203,7 +200,7 @@ const IndexPage = () => (
       {
         tables.map(table_name => {
           return (
-            <Table schema_location={new URL(`${schema_url}/mdu/${table_name}`)} />
+            <Table key={`Table_${table_name}`} schema_location={new URL(`${schema_url}/mdu/${table_name}`)} />
           )
         })
       }
