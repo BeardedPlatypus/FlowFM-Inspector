@@ -14,7 +14,7 @@ function InputNumberElement(data) {
   // TODO: add a separate integer.
   return (
     <div className="control is-expanded is-fullwidth">
-      <input className="input has-text-right" defaultValue={data.value} type="number" />
+      <input className="input has-text-right" defaultValue={data.defaultValue} type="number" />
     </div>
   )
 }
@@ -25,7 +25,7 @@ function InputEnumElement(data) {
   return (
     <div className="control is-expanded is-fullwidth">
       <div className="select is-fullwidth">
-        <select className="is-fullwidth has-text-right" defaultValue={data.value}>
+        <select className="is-fullwidth has-text-right" defaultValue={data.defaultValue}>
           {data.enumValues.map(v => {
             return (
               <option key={String(v)} value={v}>{v}</option>
@@ -42,7 +42,7 @@ function InputBooleanElement(data) {
   return (
     <div className="control is-expanded is-fullwidth">
       <div className="select is-fullwidth">
-        <select className="is-fullwidth has-text-right" defaultValue={data.value}>
+        <select className="is-fullwidth has-text-right" defaultValue={data.defaultValue}>
           <option value={true}>True</option>
           <option value={false}>False</option>
         </select>
@@ -51,10 +51,17 @@ function InputBooleanElement(data) {
   )
 }
 
-function InputStringElement(data) {
+function InputStringElement(props) {
+  // const [stringValue, setStringValue] = React.useState(data.defaultValue)
+
+  const handleChange = (event) => {
+    //setStringValue(event.target.value)
+    props.value = event.target.value
+  }
+
   return (
     <div className="control is-expanded is-fullwidth">
-      <input className="input has-text-right" defaultValue={data.value} type="text" />
+      <input className="input has-text-right" value={props.value} onChange={handleChange} type="text" />
     </div>
   )
 }
@@ -76,8 +83,8 @@ function InputElement(data) {
 
 function TableRow(props) {
   return (
-    <tr key={`Table_${props.table}_${props.key}`}>
-      <td className={styles.keyColumn}>{props.key}</td>
+    <tr>
+      <td className={styles.keyColumn}>{props.rowKey}</td>
       <td className={styles.valueColumn}>{InputElement(props)}</td>
       <td className={styles.commentColumn}><input className="input" defaultValue={(props.comment === undefined) ? "" : props.comment} /></td>
     </tr>
@@ -93,8 +100,8 @@ function MapToRow(table, [key, value]) {
 
   return {
     table: table,
-    key: key,
-    value: value.default,
+    rowKey: key,
+    defaultValue: value.default,
     valueType: is_enum ? "enum" : value.type,
     enumValues: value.enum,
   }
@@ -102,6 +109,18 @@ function MapToRow(table, [key, value]) {
 
 function RetrieveRows(data) {
   return Object.entries(data.properties).map(v => MapToRow(data.title, v));
+}
+
+
+const GetRowValue = (data, key, default_value) => {
+  if (data == null || data[key.toLowerCase()] == null) {
+    if (default_value == null) {
+      return ""
+    }
+    return default_value
+  }
+
+  return data[key.toLowerCase()]
 }
 
 function Table(props) {
@@ -166,7 +185,7 @@ function Table(props) {
                 </tr>
               </thead>
               <tbody>
-                {tableRows.map(TableRow)}
+                {tableRows.map((rowProps) => <TableRow key={`Table_${rowProps.table}_${rowProps.rowKey}`} value={GetRowValue(props.model_data, rowProps.rowKey, rowProps.defaultValue)} {...rowProps} />)}
               </tbody>
             </table>
           </div>
@@ -194,18 +213,37 @@ const tables = [
   "output",
 ]
 
-const IndexPage = () => (
-  <Layout>
-    <div className="column">
-      {
-        tables.map(table_name => {
-          return (
-            <Table key={`Table_${table_name}`} schema_location={new URL(`${schema_url}/mdu/${table_name}`)} />
-          )
-        })
-      }
-    </div>
-  </Layout>
-)
+const models_url = "http://localhost:8000/api/models"
+
+function IndexPage() {
+  const [modelData, setModelData] = React.useState({})
+
+  React.useEffect(() => {
+    fetch(new URL(models_url))
+      .then(response => response.json())
+      .then(data => {
+        fetch(new URL(`${models_url}/${data.models[0]}`))
+          .then(response => response.json())
+          .then(data => {
+            console.log(data)
+            setModelData(data)
+          })
+      })
+  }, []);
+
+  return (
+    <Layout>
+      <div className="column">
+        {
+          tables.map(table_name => {
+            return (
+              <Table key={`Table_${table_name}`} model_data={modelData[table_name]} schema_location={new URL(`${schema_url}/mdu/${table_name}`)} />
+            )
+          })
+        }
+      </div>
+    </Layout>
+  );
+}
 
 export default IndexPage
