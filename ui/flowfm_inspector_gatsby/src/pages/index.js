@@ -107,7 +107,7 @@ function RetrieveRows(data) {
 function Table(props) {
   const [tableHeader, setTableHeader] = React.useState("")
   const [tableRows, setTableRows] = React.useState([])
-  const [isCollapsed, setCollapsed] = React.useState(false)
+  const [isCollapsed, setCollapsed] = React.useState(true)
 
 
   React.useEffect(() => {
