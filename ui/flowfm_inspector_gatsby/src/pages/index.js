@@ -1,5 +1,6 @@
 import * as React from "react"
 import { useSpring, animated } from "react-spring"
+import useResizeAware from 'react-resize-aware';
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons'
@@ -108,6 +109,7 @@ function Table(props) {
   const [tableRows, setTableRows] = React.useState([])
   const [isCollapsed, setCollapsed] = React.useState(false)
 
+
   React.useEffect(() => {
     console.log(props.schema_location)
 
@@ -120,42 +122,57 @@ function Table(props) {
 
   }, []);
 
-  const { rotate } = useSpring({
-    to: { rotate: 0 },
-    from: { rotate: -90 },
+  const [resizeListener, sizes] = useResizeAware();
+  let restoreHeight = sizes.height
+
+  const { rotate, opacity, transform, height } = useSpring({
+    to: { rotate: 0, opacity: 1, height: restoreHeight },
+    from: { rotate: -90, opacity: 0, height: 0 },
     reverse: isCollapsed,
   })
 
+  const handleClick = () => {
+    if (!isCollapsed) {
+      restoreHeight = sizes.height;
+    }
+
+    setCollapsed(!isCollapsed)
+  }
+
   return (
-    <div key={`Table_${tableHeader}`} className="pt-6">
-      <button class="button is-white is-fullwidth has-text-left level" onClick={() => setCollapsed(!isCollapsed)}>
-        <div className="level-left">
-          <div className="level-item">
-            <animated.div style={{ rotate }} on={isCollapsed}>
-              <FontAwesomeIcon icon={faCaretDown} />
-            </animated.div>
+    <div key={`Table_${tableHeader}`} className="pt-5">
+      <div class="box p-0" >
+        <button class="button is-white is-fullwidth has-text-left level" onClick={handleClick}>
+          <div className="level-left pl-2">
+            <div className="level-item pr-1">
+              <animated.div style={{ rotate }} on={isCollapsed}>
+                <FontAwesomeIcon icon={faCaretDown} />
+              </animated.div>
+            </div>
+
+            <div className="level-item">
+              <h2 className="subtitle is-4">{tableHeader}</h2>
+            </div>
           </div>
+        </button>
 
-          <div className="level-item">
-            <h2 className="subtitle is-5">{tableHeader}</h2>
+        <animated.div style={{ overflow: 'hidden', opacity, transform, height }} on={isCollapsed}>
+          <div className="table-container ml-6 mr-6 pb-4" style={{ position: 'relative' }}>
+            {resizeListener}
+            <table className="table is-hoverable is-fullwidth">
+              <thead>
+                <tr>
+                  <th className={styles.keyColumn}>Key</th>
+                  <th className={styles.valueColumn}>Value</th>
+                  <th className={styles.commentColumn}>Comment</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tableRows.map(TableRow)}
+              </tbody>
+            </table>
           </div>
-        </div>
-      </button>
-
-
-      <div className="table-container">
-        <table className="table is-hoverable is-fullwidth">
-          <thead>
-            <tr>
-              <th className={styles.keyColumn}>Key</th>
-              <th className={styles.valueColumn}>Value</th>
-              <th className={styles.commentColumn}>Comment</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tableRows.map(TableRow)}
-          </tbody>
-        </table>
+        </animated.div>
       </div>
     </div>
   );
