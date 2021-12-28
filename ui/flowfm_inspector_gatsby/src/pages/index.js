@@ -51,11 +51,33 @@ function InputBooleanElement(data) {
   )
 }
 
-function InputStringElement(props) {
-  // const [stringValue, setStringValue] = React.useState(data.defaultValue)
 
+function InputPathElement(props) {
+  // TODO: add logic to add to the field.
   const handleChange = (event) => {
-    //setStringValue(event.target.value)
+    props.value = event.target.value
+  }
+
+  const inputFile = React.useRef(null)
+
+  const onButtonClick = () => {
+    inputFile.current.click();
+  }
+
+  return (
+    <div className="field">
+      <div className="control is-expanded is-fullwidth is-flex">
+        <input className="input has-text-right flex-grow" value={props.value} onChange={handleChange} type="text" />
+        <input type='file' id='file' ref={inputFile} style={{ display: 'none' }} />
+        <button className="button" onClick={onButtonClick}>...</button>
+      </div>
+
+    </div>
+  )
+}
+
+function InputStringElement(props) {
+  const handleChange = (event) => {
     props.value = event.target.value
   }
 
@@ -75,6 +97,8 @@ function InputElement(data) {
       return InputBooleanElement(data)
     case "enum":
       return InputEnumElement(data)
+    case "path":
+      return InputPathElement(data)
     case "string":
     default:
       return InputStringElement(data)
@@ -95,14 +119,23 @@ function RetrieveHeader(data) {
   return data.title;
 }
 
-function MapToRow(table, [key, value]) {
+
+function GetValueType(value) {
   const is_enum = "enum" in value
+
+  if (is_enum) return "enum"
+  if (value.type === "string" && value.format === "path") return "path"
+  return value.type
+}
+
+
+function MapToRow(table, [key, value]) {
 
   return {
     table: table,
     rowKey: key,
     defaultValue: value.default,
-    valueType: is_enum ? "enum" : value.type,
+    valueType: GetValueType(value),
     enumValues: value.enum,
   }
 }
