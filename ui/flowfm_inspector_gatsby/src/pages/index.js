@@ -64,11 +64,17 @@ function InputPathElement(props) {
     inputFile.current.click();
   }
 
+  // TODO: replace this with the necessary logic to work with electron
+  const onFileChange = (event) => {
+    console.log(event.target.files)
+  }
+
+  // Empty file input is used by the button to actually open the file selector.
   return (
     <div className="field">
       <div className="control is-expanded is-fullwidth is-flex">
         <input className="input has-text-right flex-grow" value={props.value} onChange={handleChange} type="text" />
-        <input type='file' id='file' ref={inputFile} style={{ display: 'none' }} />
+        <input type='file' id='file' ref={inputFile} style={{ display: 'none' }} onChange={onFileChange} />
         <button className="button" onClick={onButtonClick}>...</button>
       </div>
 
@@ -110,7 +116,7 @@ function TableRow(props) {
     <tr>
       <td className={styles.keyColumn}>{props.rowKey}</td>
       <td className={styles.valueColumn}>{InputElement(props)}</td>
-      <td className={styles.commentColumn}><input className="input" defaultValue={(props.comment === undefined) ? "" : props.comment} /></td>
+      <td className={styles.commentColumn}><input className="input" defaultValue={props.comment} /></td>
     </tr>
   )
 }
@@ -155,6 +161,9 @@ const GetRowValue = (data, key, default_value) => {
 
   return data[key.toLowerCase()]
 }
+
+
+const GetCommentValue = (data, key) => (data == null || data.comments == null || data.comments[key.toLowerCase()] == null) ? "" : data.comments[key.toLowerCase()];
 
 function Table(props) {
   const [tableHeader, setTableHeader] = React.useState("")
@@ -218,7 +227,7 @@ function Table(props) {
                 </tr>
               </thead>
               <tbody>
-                {tableRows.map((rowProps) => <TableRow key={`Table_${rowProps.table}_${rowProps.rowKey}`} value={GetRowValue(props.model_data, rowProps.rowKey, rowProps.defaultValue)} {...rowProps} />)}
+                {tableRows.map((rowProps) => <TableRow key={`Table_${rowProps.table}_${rowProps.rowKey}`} value={GetRowValue(props.model_data, rowProps.rowKey, rowProps.defaultValue)} comment={GetCommentValue(props.model_data, rowProps.rowKey)} {...rowProps} />)}
               </tbody>
             </table>
           </div>
