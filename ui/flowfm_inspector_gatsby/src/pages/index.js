@@ -73,7 +73,7 @@ function InputPathElement(props) {
   return (
     <div className="field">
       <div className="control is-expanded is-fullwidth is-flex">
-        <input className="input has-text-right flex-grow" value={props.value} onChange={handleChange} type="text" />
+        <input className="input has-text-right flex-grow" value={props.value.filepath == null ? "" : props.value.filepath} onChange={handleChange} type="text" />
         <input type='file' id='file' ref={inputFile} style={{ display: 'none' }} onChange={onFileChange} />
         <button className="button" onClick={onButtonClick}>...</button>
       </div>
