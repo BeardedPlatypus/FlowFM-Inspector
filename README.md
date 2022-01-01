@@ -22,4 +22,6 @@ for the foreseeable future). Given that this is my first React project, the code
 itself is most likely riddled with bad practices and bugs, and as such should not be
 used as a reference. 
 
+## Installation
+
 ## References
