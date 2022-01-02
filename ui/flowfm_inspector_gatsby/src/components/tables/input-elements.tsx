@@ -40,3 +40,25 @@ export const EnumInput: React.FC<EnumInputProps> = (props: EnumInputProps) => {
     )
 }
 
+export interface BooleanInputProps {
+    type: "boolean";
+    value: boolean;
+}
+
+export const BooleanInput: React.FC<BooleanInputProps> = (props: BooleanInputProps) => {
+    const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        props.value = Boolean(event.target.value)
+    }
+
+    return (
+        <div className="select is-fullwidth">
+            <select className="is-fullwidth has-text-right"
+                value={String(props.value)}
+                onChange={handleChange}>
+                <option value={String(true)}>True</option>
+                <option value={String(false)}>False</option>
+            </select>
+        </div>
+    )
+}
+
