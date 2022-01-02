@@ -148,3 +148,15 @@ export const Control: React.FC<ControlProps> = ({ children }: ControlProps) => {
     )
 }
 
+export type InputProps =
+    | NumberInputProps
+    | EnumInputProps
+    | BooleanInputProps
+    | PathInputProps
+    | StringInputProps
+
+export type SupportedType =
+    | number
+    | boolean
+    | string
+    | ({ filepath: string } | null)
