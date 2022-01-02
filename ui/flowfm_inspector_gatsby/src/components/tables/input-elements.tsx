@@ -101,3 +101,37 @@ export const PathInput: React.FC<PathInputProps> = (props: PathInputProps) => {
     )
 }
 
+export interface StringInputProps {
+    type: "string";
+    value: string;
+}
+
+export const StringInput: React.FC<StringInputProps> = (props: StringInputProps) => {
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        props.value = event.target.value
+    }
+
+    return (
+        <input className="input has-text-right"
+            value={props.value}
+            onChange={handleChange}
+            type="text" />
+    )
+}
+
+export interface CommentInputProps {
+    comment?: string
+}
+
+export const CommentInput: React.FC<CommentInputProps> = (props: CommentInputProps) => {
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        props.comment = event.target.value
+    }
+
+    return (
+        <input className="input has-text-left"
+            value={props.comment == null ? "" : props.comment}
+            onChange={handleChange}
+            type="text" />
+    )
+}
