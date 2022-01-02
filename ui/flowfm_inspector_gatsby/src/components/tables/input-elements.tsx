@@ -62,3 +62,42 @@ export const BooleanInput: React.FC<BooleanInputProps> = (props: BooleanInputPro
     )
 }
 
+export interface PathInputProps {
+    type: "path";
+    value: { filepath: string } | null;
+}
+
+export const PathInput: React.FC<PathInputProps> = (props: PathInputProps) => {
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        props.value.filepath = event.target.value
+    }
+
+    const inputFile = React.useRef(null)
+
+    const onButtonClick = () => {
+        inputFile.current.click();
+    }
+
+    const onFileChange = (event) => {
+        console.log(event.target.files)
+    }
+
+    return (
+        <div className="is-expanded is-fullwidth is-flex">
+            <input className="input has-text-right flex-grow"
+                value={props.value == null ? "" : props.value.filepath}
+                onChange={handleChange}
+                type="text" />
+            <input type='file'
+                id='file'
+                ref={inputFile}
+                style={{ display: 'none' }}
+                onChange={onFileChange} />
+            <button className="button"
+                onClick={onButtonClick}>
+                ...
+            </button>
+        </div>
+    )
+}
+
