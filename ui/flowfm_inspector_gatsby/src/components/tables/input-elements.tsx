@@ -135,3 +135,16 @@ export const CommentInput: React.FC<CommentInputProps> = (props: CommentInputPro
             type="text" />
     )
 }
+
+export interface ControlProps {
+    children?: React.ReactNode
+}
+
+export const Control: React.FC<ControlProps> = ({ children }: ControlProps) => {
+    return (
+        <div className="control is-expanded is-fullwidth">
+            {children}
+        </div>
+    )
+}
+
