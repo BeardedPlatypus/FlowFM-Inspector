@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Dict, Iterable, Type
 from uuid import uuid4
 from fastapi import FastAPI
@@ -40,16 +41,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.get("/")
-async def root():
-    model = FMModel().dict(
-        exclude={
-            "geometry",
-        }
-    )
-    return model
 
 
 mdu_models = [
