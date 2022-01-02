@@ -127,4 +127,4 @@ async def request_model_keys():
 @app.get("/api/models/{id}")
 async def request_specific_model(id: UUID4):
     # TODO: make this more generic with a separate function
-    return model_mapping[id].dict(exclude={"geometry": {"netfile": {"network"}}})
+    return model_mapping[id].dict(by_alias=True)
