@@ -80,6 +80,9 @@ class BaseModel(PydanticBaseModel):
 
 initial_uuid = uuid4()
 initial_model = FMModel()
+initial_model.general.fileversion = "1.12"
+initial_model.general.comments.fileversion = "A test value"
+initial_model.geometry.netfile.filepath = Path("test.nc")
 
 model_mapping: Dict[UUID4, FileModel] = {initial_uuid: initial_model}
 
