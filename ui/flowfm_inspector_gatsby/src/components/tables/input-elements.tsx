@@ -150,13 +150,29 @@ export const Control: React.FC<ControlProps> = ({ children }: ControlProps) => {
 
 export interface ArrayInputProps {
     type: "array"
+    elemType: ValueType
     elems: InputBaseProps[]
 }
 
+export type ValueType =
+    | "number"
+    | "enum"
+    | "boolean"
+    | "path"
+    | "string"
+
+// TODO: determine how to remove items
 export const ArrayInput: React.FC<ArrayInputProps> = (props: ArrayInputProps) => {
     return (
         <div className="is-expanded is-fullwidth">
-            {props.elems.map(elem => <PropertyInput {...elem} />)}
+            {
+                props.elems.map(elem => <PropertyInput {...elem} />)
+            }
+            <div className="is-expanded is-fullwidth">
+                <button className="button is-expanded is-fullwidth is-light">
+                    Add item
+                </button>
+            </div>
         </div>
     )
 }

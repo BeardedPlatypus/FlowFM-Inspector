@@ -27,14 +27,7 @@ export type ValueDescription =
     | BaseValueDescription
     | CompositeValueDescription
 
-type ValueType =
-    | "number"
-    | "enum"
-    | "boolean"
-    | "path"
-    | "string"
-
-function toValueType(val: string): ValueType {
+function toValueType(val: string): InputElems.ValueType {
     switch (val) {
         case "number":
         case "integer":
@@ -54,7 +47,7 @@ function toValueType(val: string): ValueType {
 interface RowDescription {
     table: string
     rowKey: string
-    valueType: ValueType
+    valueType: InputElems.ValueType
     isArray: boolean
     enumValues: string[]
 }
@@ -79,6 +72,7 @@ function getCompositeValueProps(description: RowDescription, value: any): InputE
 
     return {
         type: "array",
+        elemType: description.valueType,
         elems: elems.map(v => getBaseValueProps(description, v))
     }
 }
@@ -112,7 +106,7 @@ function getComment(key: string, data?: CommentData): string {
 }
 
 function getRows({ properties, title }: Schema): RowDescription[] {
-    function getBaseValueType(value: BaseValueDescription): ValueType {
+    function getBaseValueType(value: BaseValueDescription): InputElems.ValueType {
         const is_enum = "enum" in value
         if (is_enum) return "enum"
 
@@ -122,7 +116,7 @@ function getRows({ properties, title }: Schema): RowDescription[] {
         return toValueType(value.type)
     }
 
-    function getValueType(value: ValueDescription): ValueType {
+    function getValueType(value: ValueDescription): InputElems.ValueType {
         const is_array = "items" in value
         if (is_array) return getBaseValueType(value.items)
 
