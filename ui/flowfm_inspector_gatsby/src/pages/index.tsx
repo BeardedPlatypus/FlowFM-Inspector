@@ -4,6 +4,7 @@ import { PageProps } from "gatsby"
 import Layout from "../components/layout"
 import { InputTable, Model, Schema } from "../components/tables/input-table"
 import { CollapsiblePanel } from "../components/collapsible-panel"
+import Seo from "../components/seo"
 
 const schema_url = "http://localhost:8000/api/schema"
 
@@ -67,6 +68,7 @@ const IndexPage: React.FC<PageProps> = () => {
 
     return (
         <Layout>
+            <Seo title="Index" />
             <div className="column">
                 {
                     activeTables.map(tableName => {
