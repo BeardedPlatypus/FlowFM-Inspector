@@ -4,31 +4,7 @@ import * as styles from "./input-table.module.scss"
 import * as InputElems from "./input-elements"
 
 
-interface TableRowProps {
-    rowKey: string
-    comment?: string
-    children?: React.ReactNode
-}
-
-const TableRow: React.FC<TableRowProps> = (props: TableRowProps) => {
-    return (
-        <tr>
-            <td className={styles.keyColumn}>{props.rowKey}</td>
-            <td className={styles.valueColumn}>{props.children}</td>
-            <td className={styles.commentColumn}>
-                <InputElems.Control>
-                    <InputElems.CommentInput comment={props.comment} />
-                </InputElems.Control>
-            </td>
-        </tr>
-    )
-}
-
-export type ValueDescription =
-    | { enum: string[] }
-    | { type: string, format: string }
-    | { type: string }
-
+// DataInterpretation
 export interface Schema {
     title: string
     properties: { [key: string]: ValueDescription }
@@ -39,39 +15,17 @@ export interface Model {
     [key: string]: InputElems.SupportedType | { [key: string]: string }
 }
 
-interface CommentData {
-    comments?: { [key: string]: string }
-}
+export type BaseValueDescription =
+    | { enum: string[] }
+    | { type: string, format: string }
+    | { type: string }
 
-function getComment(key: string, data?: CommentData): string {
-    // Comments are stored with lowercase keys.
-    return (data == null || data.comments == null || data.comments[key.toLowerCase()] == null)
-        ? ""
-        : data.comments[key.toLowerCase()];
-}
+export type CompositeValueDescription =
+    | { items: BaseValueDescription }
 
-function getValueProps(description: RowDescription, model: Model): InputElems.InputProps {
-    const key = description.rowKey
-
-    if (!(key in model)) {
-        throw new Error(`The key ${key} is not available in the provided model.`)
-    }
-
-    const valueRaw: any = model[key]
-
-    switch (description.valueType) {
-        case "number":
-            return { type: "number", value: valueRaw as number }
-        case "boolean":
-            return { type: "boolean", value: valueRaw as boolean }
-        case "enum":
-            return { type: "enum", value: valueRaw as string, enumValues: description.enumValues }
-        case "path":
-            return { type: "path", value: valueRaw as { filepath: string } }
-        case "string":
-            return { type: "string", value: String(valueRaw) }
-    }
-}
+export type ValueDescription =
+    | BaseValueDescription
+    | CompositeValueDescription
 
 type ValueType =
     | "number"
@@ -93,7 +47,7 @@ function toValueType(val: string): ValueType {
             return "path";
         case "string":
         default:
-            return "string"
+            return "string";
     }
 }
 
@@ -101,11 +55,64 @@ interface RowDescription {
     table: string
     rowKey: string
     valueType: ValueType
+    isArray: boolean
     enumValues: string[]
 }
 
+function getBaseValueProps(description: RowDescription, value: any): InputElems.InputBaseProps {
+    switch (description.valueType) {
+        case "number":
+            return { type: "number", value: value as number }
+        case "boolean":
+            return { type: "boolean", value: value as boolean }
+        case "enum":
+            return { type: "enum", value: value as string, enumValues: description.enumValues }
+        case "path":
+            return { type: "path", value: value as { filepath: string } }
+        case "string":
+            return { type: "string", value: String(value) }
+    }
+}
+
+function getCompositeValueProps(description: RowDescription, value: any): InputElems.ArrayInputProps {
+    const elems = value as any[] == null ? [] : value as any[]
+
+    return {
+        type: "array",
+        elems: elems.map(v => getBaseValueProps(description, v))
+    }
+}
+
+function getValueProps(description: RowDescription, model: Model): InputElems.InputProps {
+    const key = description.rowKey
+
+    if (!(key in model)) {
+        throw new Error(`The key ${key} is not available in the provided model.`)
+    }
+
+    const value = model[key]
+
+    if (description.isArray) {
+        return getCompositeValueProps(description, value)
+    }
+    else {
+        return getBaseValueProps(description, value)
+    }
+}
+
+interface CommentData {
+    comments?: { [key: string]: string }
+}
+
+function getComment(key: string, data?: CommentData): string {
+    // Comments are stored with lowercase keys.
+    return (data == null || data.comments == null || data.comments[key.toLowerCase()] == null)
+        ? ""
+        : data.comments[key.toLowerCase()];
+}
+
 function getRows({ properties, title }: Schema): RowDescription[] {
-    function getValueType(value: ValueDescription): ValueType {
+    function getBaseValueType(value: BaseValueDescription): ValueType {
         const is_enum = "enum" in value
         if (is_enum) return "enum"
 
@@ -115,16 +122,44 @@ function getRows({ properties, title }: Schema): RowDescription[] {
         return toValueType(value.type)
     }
 
+    function getValueType(value: ValueDescription): ValueType {
+        const is_array = "items" in value
+        if (is_array) return getBaseValueType(value.items)
+
+        return getBaseValueType(value)
+    }
+
     function toRow(tableTitle: string, [key, value]: [string, ValueDescription]): RowDescription {
         return {
             table: tableTitle,
             rowKey: key,
             valueType: getValueType(value),
+            isArray: "items" in value,
             enumValues: "enum" in value ? value.enum : [],
         }
     }
 
     return Object.entries(properties).map(v => toRow(title, v))
+}
+
+interface TableRowProps {
+    rowKey: string
+    comment?: string
+    children?: React.ReactNode
+}
+
+const TableRow: React.FC<TableRowProps> = (props: TableRowProps) => {
+    return (
+        <tr>
+            <td className={styles.keyColumn}>{props.rowKey}</td>
+            <td className={styles.valueColumn}>{props.children}</td>
+            <td className={styles.commentColumn}>
+                <InputElems.Control>
+                    <InputElems.CommentInput comment={props.comment} />
+                </InputElems.Control>
+            </td>
+        </tr>
+    )
 }
 
 export interface TableProps {

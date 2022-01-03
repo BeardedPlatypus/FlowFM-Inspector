@@ -148,18 +148,42 @@ export const Control: React.FC<ControlProps> = ({ children }: ControlProps) => {
     )
 }
 
-export type InputProps =
+export interface ArrayInputProps {
+    type: "array"
+    elems: InputBaseProps[]
+}
+
+export const ArrayInput: React.FC<ArrayInputProps> = (props: ArrayInputProps) => {
+    return (
+        <div className="is-expanded is-fullwidth">
+            {props.elems.map(elem => <PropertyInput {...elem} />)}
+        </div>
+    )
+}
+
+export type InputBaseProps =
     | NumberInputProps
     | EnumInputProps
     | BooleanInputProps
     | PathInputProps
     | StringInputProps
 
+export type InputCompositeProps =
+    | ArrayInputProps
+
+export type InputProps =
+    | InputBaseProps
+    | InputCompositeProps
+
 export type SupportedType =
     | number
     | boolean
     | string
     | ({ filepath: string } | null)
+    | number[]
+    | boolean[]
+    | string[]
+    | ({ filepath: string } | null)[]
 
 
 export const PropertyInput: React.FC<InputProps> = (props: InputProps) => {
@@ -195,6 +219,10 @@ export const PropertyInput: React.FC<InputProps> = (props: InputProps) => {
                 </Control>
             )
         case "array":
-            throw new Error("Not supported yet.")
+            return (
+                <Control>
+                    <ArrayInput {...props} />
+                </Control>
+            )
     }
 }
