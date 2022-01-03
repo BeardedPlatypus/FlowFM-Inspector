@@ -24,41 +24,6 @@ const TableRow: React.FC<TableRowProps> = (props: TableRowProps) => {
     )
 }
 
-const PropertyValue: React.FC<InputElems.InputProps> = (props: InputElems.InputProps) => {
-    switch (props.type) {
-        case "number":
-            return (
-                <InputElems.Control>
-                    <InputElems.NumberInput {...props} />
-                </InputElems.Control>
-            )
-        case "boolean":
-            return (
-                <InputElems.Control>
-                    <InputElems.BooleanInput {...props} />
-                </InputElems.Control>
-            )
-        case "enum":
-            return (
-                <InputElems.Control>
-                    <InputElems.EnumInput {...props} />
-                </InputElems.Control>
-            )
-        case "path":
-            return (
-                <InputElems.Control>
-                    <InputElems.PathInput {...props} />
-                </InputElems.Control>
-            )
-        case "string":
-            return (
-                <InputElems.Control>
-                    <InputElems.StringInput {...props} />
-                </InputElems.Control>
-            )
-    }
-}
-
 export type ValueDescription =
     | { enum: string[] }
     | { type: string, format: string }
@@ -175,7 +140,7 @@ export const InputTable: React.FC<TableProps> = (props: TableProps) => {
             <TableRow key={`Table:${props.schema.title}:${description.rowKey}`}
                 comment={getComment(description.rowKey, props.model)}
                 rowKey={description.rowKey}>
-                <PropertyValue {...valueProps} />
+                <InputElems.PropertyInput {...valueProps} />
             </TableRow>
         )
     }

@@ -160,3 +160,41 @@ export type SupportedType =
     | boolean
     | string
     | ({ filepath: string } | null)
+
+
+export const PropertyInput: React.FC<InputProps> = (props: InputProps) => {
+    switch (props.type) {
+        case "number":
+            return (
+                <Control>
+                    <NumberInput {...props} />
+                </Control>
+            )
+        case "boolean":
+            return (
+                <Control>
+                    <BooleanInput {...props} />
+                </Control>
+            )
+        case "enum":
+            return (
+                <Control>
+                    <EnumInput {...props} />
+                </Control>
+            )
+        case "path":
+            return (
+                <Control>
+                    <PathInput {...props} />
+                </Control>
+            )
+        case "string":
+            return (
+                <Control>
+                    <StringInput {...props} />
+                </Control>
+            )
+        case "array":
+            throw new Error("Not supported yet.")
+    }
+}
