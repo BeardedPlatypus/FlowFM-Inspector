@@ -1,11 +1,16 @@
 import * as React from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGithubAlt } from "@fortawesome/free-brands-svg-icons";
+import { faGithubAlt, IconDefinition } from "@fortawesome/free-brands-svg-icons";
 
 import "../styles/global.scss"
 import * as styles from "./footer.module.scss"
 
-function SocialButton(props) {
+interface SocialButtonProps {
+  link: string
+  icon: IconDefinition
+}
+
+const SocialButton: React.FC<SocialButtonProps> = (props: SocialButtonProps) => {
   return (
     <a href={props.link} target="_blank" rel="noreferrer">
       <span className="fa-layers fa-fw fa-2x has-text-white">
@@ -15,8 +20,7 @@ function SocialButton(props) {
   )
 }
 
-
-const Footer = () => (
+const Footer: React.FC = () => (
   <footer className={`footer ${styles.stickyFooter} ${styles.textFooter} has-background-info has-text-white`}>
     <div className="level">
       <div className="level-left">
