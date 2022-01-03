@@ -77,31 +77,41 @@ initial_model.geometry.netfile.filepath = Path("test.nc")
 
 model_mapping: Dict[UUID4, FileModel] = {initial_uuid: initial_model}
 
-
+# Note that this has currently been set up for MDU files.
 def get_sanitized_schema(model_type: Type) -> Dict:
     schema = dict(model_type.schema())
 
+    # No need to send unnecessary data
     schema.pop("description", None)
+    schema.pop("definitions", None)
 
     if "properties" in schema:
         schema["properties"].pop("comments", None)
 
         # we assume that every ref is a reference to another file
         # and as such replace it with a filepath.
-        referenced_properties: Iterable[str] = (
-            key for (key, value) in schema["properties"].items() if "$ref" in value
-        )
+        update_model_properties(schema["properties"])
 
-        for key in referenced_properties:
-            print(key)
-            print(schema["properties"][key])
-            schema["properties"][key] = {
+    return schema
+
+
+def update_model_properties(properties: dict) -> None:
+    for (key, value) in properties.items():
+        if "$ref" in value:
+            properties[key] = {
                 "title": key.capitalize(),
                 "type": "string",
                 "format": "path",
             }
 
-    return schema
+        elif value["type"] == "array":
+            if (
+                "$ref" in value["items"] or "anyOf" in value["items"]
+            ):  # "anyOf" only occurs for dryPointsFile in mdu.
+                value["items"] = {
+                    "type": "string",
+                    "format": "path",
+                }
 
 
 def to_model(model_category: str, model_name: str) -> Type:
