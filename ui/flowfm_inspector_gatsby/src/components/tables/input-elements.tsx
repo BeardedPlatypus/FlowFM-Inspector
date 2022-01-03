@@ -1,4 +1,6 @@
 import * as React from "react"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGripVertical } from '@fortawesome/free-solid-svg-icons'
 
 export interface NumberInputProps {
     type: "number";
@@ -31,7 +33,7 @@ export const EnumInput: React.FC<EnumInputProps> = (props: EnumInputProps) => {
 
     return (
         <div className="select is-fullwidth">
-            <select className="is-fullwidth has-text-right"
+            <select className="has-text-right"
                 value={props.value}
                 onChange={handleChange}>
                 {props.enumValues.map(v => <option key={String(v)} value={v}>{v}</option>)}
@@ -52,7 +54,7 @@ export const BooleanInput: React.FC<BooleanInputProps> = (props: BooleanInputPro
 
     return (
         <div className="select is-fullwidth">
-            <select className="is-fullwidth has-text-right"
+            <select className="has-text-right"
                 value={String(props.value)}
                 onChange={handleChange}>
                 <option value={String(true)}>True</option>
@@ -83,7 +85,7 @@ export const PathInput: React.FC<PathInputProps> = (props: PathInputProps) => {
     }
 
     return (
-        <div className="is-expanded is-fullwidth is-flex">
+        <div className="is-expanded is-flex">
             <input className="input has-text-right flex-grow"
                 value={props.value == null ? "" : props.value.filepath}
                 onChange={handleChange}
@@ -142,7 +144,7 @@ export interface ControlProps {
 
 export const Control: React.FC<ControlProps> = ({ children }: ControlProps) => {
     return (
-        <div className="control is-expanded is-fullwidth">
+        <div className="control">
             {children}
         </div>
     )
@@ -161,12 +163,16 @@ export type ValueType =
     | "path"
     | "string"
 
-// TODO: determine how to remove items
 export const ArrayInput: React.FC<ArrayInputProps> = (props: ArrayInputProps) => {
     return (
         <div className="is-expanded is-fullwidth">
             {
-                props.elems.map(elem => <PropertyInput {...elem} />)
+                props.elems.map(elem =>
+                    <div className="is-flex is-fullwidth is-align-items-center is-justify-content-flex-end pb-1">
+                        <PropertyInputInner {...elem} />
+                        <FontAwesomeIcon icon={faGripVertical} className="has-text-grey-light flex-shrink ml-1 pl-1" />
+                    </div>
+                )
             }
             <div className="is-expanded is-fullwidth">
                 <button className="button is-expanded is-fullwidth is-light">
@@ -201,44 +207,40 @@ export type SupportedType =
     | string[]
     | ({ filepath: string } | null)[]
 
-
-export const PropertyInput: React.FC<InputProps> = (props: InputProps) => {
+const PropertyInputInner: React.FC<InputProps> = (props: InputProps) => {
     switch (props.type) {
         case "number":
             return (
-                <Control>
-                    <NumberInput {...props} />
-                </Control>
+                <NumberInput {...props} />
             )
         case "boolean":
             return (
-                <Control>
-                    <BooleanInput {...props} />
-                </Control>
+                <BooleanInput {...props} />
             )
         case "enum":
             return (
-                <Control>
-                    <EnumInput {...props} />
-                </Control>
+                <EnumInput {...props} />
             )
         case "path":
             return (
-                <Control>
-                    <PathInput {...props} />
-                </Control>
+                <PathInput {...props} />
             )
         case "string":
             return (
-                <Control>
-                    <StringInput {...props} />
-                </Control>
+                <StringInput {...props} />
             )
         case "array":
             return (
-                <Control>
-                    <ArrayInput {...props} />
-                </Control>
+                <ArrayInput {...props} />
             )
     }
+}
+
+
+export const PropertyInput: React.FC<InputProps> = (props: InputProps) => {
+    return (
+        <Control>
+            <PropertyInputInner {...props} />
+        </Control>
+    )
 }
