@@ -1,3 +1,5 @@
+<p align='center'><img align='center' src='https://github.com/BeardedPlatypus/media-storage/blob/main/FlowFM-Inspector/hydro.png?raw=true' width='35%'></p>
+
 # FlowFM Inspector - Inspect and modify D-FlowFM files
 
 The FlowFM Inspector is a small tool used to load, inspect, and modify
@@ -25,3 +27,7 @@ used as a reference.
 ## Installation
 
 ## References
+
+## Attribution
+
+- Icon made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
