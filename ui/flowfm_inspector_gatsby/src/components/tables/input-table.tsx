@@ -73,7 +73,8 @@ function getCompositeValueProps(description: RowDescription, value: any): InputE
     return {
         type: "array",
         elemType: description.valueType,
-        elems: elems.map(v => getBaseValueProps(description, v))
+        elems: elems.map(v => getBaseValueProps(description, v)),
+        enumValues: description.enumValues
     }
 }
 

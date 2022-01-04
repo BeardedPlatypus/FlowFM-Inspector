@@ -2,9 +2,36 @@ import * as React from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGripVertical } from '@fortawesome/free-solid-svg-icons'
 
-export interface NumberInputProps {
+interface InputElementProps {
+    type: ValueType
+    isArrayElement?: boolean
+    children?: React.ReactNode
+}
+
+const InputElement: React.FC<InputElementProps> = ({ isArrayElement, children }) => {
+    const className = `is-flex is-align-items-center ${isArrayElement ? "mb-1 pb-1" : ""}`
+
+    return (
+        <div className={className}>
+            {children}
+            {
+                (isArrayElement !== undefined && isArrayElement) &&
+                <FontAwesomeIcon icon={faGripVertical} className="has-text-grey-light ml-1 pl-1" />
+            }
+        </div>
+    )
+}
+
+export interface NumberInputProps extends InputElementProps {
     type: "number";
     value: number;
+}
+
+function defaultNumberInputProps(): NumberInputProps {
+    return {
+        type: "number",
+        value: 1.0,
+    }
 }
 
 export const NumberInput: React.FC<NumberInputProps> = (props: NumberInputProps) => {
@@ -13,17 +40,27 @@ export const NumberInput: React.FC<NumberInputProps> = (props: NumberInputProps)
     }
 
     return (
-        <input className="input has-text-right"
-            value={props.value == null ? "" : props.value}
-            onChange={handleChange}
-            type="number" />
+        <InputElement {...props}>
+            <input className="input has-text-right"
+                value={props.value == null ? "" : props.value}
+                onChange={handleChange}
+                type="number" />
+        </InputElement>
     )
 }
 
-export interface EnumInputProps {
+export interface EnumInputProps extends InputElementProps {
     type: "enum";
     value: string;
     enumValues: string[];
+}
+
+function defaultEnumInputProps(enumValues: string[]): EnumInputProps {
+    return {
+        type: "enum",
+        value: enumValues[0],
+        enumValues: enumValues,
+    }
 }
 
 export const EnumInput: React.FC<EnumInputProps> = (props: EnumInputProps) => {
@@ -32,19 +69,28 @@ export const EnumInput: React.FC<EnumInputProps> = (props: EnumInputProps) => {
     }
 
     return (
-        <div className="select is-fullwidth">
-            <select className="has-text-right"
-                value={props.value}
-                onChange={handleChange}>
-                {props.enumValues.map(v => <option key={String(v)} value={v}>{v}</option>)}
-            </select>
-        </div>
+        <InputElement {...props}>
+            <div className="select is-fullwidth">
+                <select className="has-text-right"
+                    value={props.value}
+                    onChange={handleChange}>
+                    {props.enumValues.map(v => <option key={String(v)} value={v}>{v}</option>)}
+                </select>
+            </div>
+        </InputElement>
     )
 }
 
-export interface BooleanInputProps {
+export interface BooleanInputProps extends InputElementProps {
     type: "boolean";
     value: boolean;
+}
+
+function defaultBooleanInputProps(): BooleanInputProps {
+    return {
+        type: "boolean",
+        value: false,
+    }
 }
 
 export const BooleanInput: React.FC<BooleanInputProps> = (props: BooleanInputProps) => {
@@ -53,20 +99,29 @@ export const BooleanInput: React.FC<BooleanInputProps> = (props: BooleanInputPro
     }
 
     return (
-        <div className="select is-fullwidth">
-            <select className="has-text-right"
-                value={String(props.value)}
-                onChange={handleChange}>
-                <option value={String(true)}>True</option>
-                <option value={String(false)}>False</option>
-            </select>
-        </div>
+        <InputElement {...props}>
+            <div className="select is-fullwidth">
+                <select className="has-text-right"
+                    value={String(props.value)}
+                    onChange={handleChange}>
+                    <option value={String(true)}>True</option>
+                    <option value={String(false)}>False</option>
+                </select>
+            </div>
+        </InputElement>
     )
 }
 
-export interface PathInputProps {
+export interface PathInputProps extends InputElementProps {
     type: "path";
     value: { filepath: string } | null;
+}
+
+function defaultPathInputProps(): PathInputProps {
+    return {
+        type: "path",
+        value: null,
+    }
 }
 
 export const PathInput: React.FC<PathInputProps> = (props: PathInputProps) => {
@@ -85,8 +140,8 @@ export const PathInput: React.FC<PathInputProps> = (props: PathInputProps) => {
     }
 
     return (
-        <div className="is-expanded is-flex">
-            <input className="input has-text-right flex-grow"
+        <InputElement {...props}>
+            <input className="input has-text-right"
                 value={props.value == null ? "" : props.value.filepath}
                 onChange={handleChange}
                 type="text" />
@@ -99,13 +154,20 @@ export const PathInput: React.FC<PathInputProps> = (props: PathInputProps) => {
                 onClick={onButtonClick}>
                 ...
             </button>
-        </div>
+        </InputElement>
     )
 }
 
-export interface StringInputProps {
+export interface StringInputProps extends InputElementProps {
     type: "string";
     value: string;
+}
+
+function defaultStringInputProps(): StringInputProps {
+    return {
+        type: "string",
+        value: "",
+    }
 }
 
 export const StringInput: React.FC<StringInputProps> = (props: StringInputProps) => {
@@ -114,10 +176,12 @@ export const StringInput: React.FC<StringInputProps> = (props: StringInputProps)
     }
 
     return (
-        <input className="input has-text-right"
-            value={props.value}
-            onChange={handleChange}
-            type="text" />
+        <InputElement {...props}>
+            <input className="input has-text-right"
+                value={props.value}
+                onChange={handleChange}
+                type="text" />
+        </InputElement>
     )
 }
 
@@ -154,6 +218,22 @@ export interface ArrayInputProps {
     type: "array"
     elemType: ValueType
     elems: InputBaseProps[]
+    enumValues?: string[]
+}
+
+function createDefault(type: ValueType, enumValues?: string[]): InputBaseProps {
+    switch (type) {
+        case "number":
+            return defaultNumberInputProps();
+        case "enum":
+            return defaultEnumInputProps(enumValues);
+        case "boolean":
+            return defaultBooleanInputProps();
+        case "path":
+            return defaultPathInputProps();
+        case "string":
+            return defaultStringInputProps();
+    }
 }
 
 export type ValueType =
@@ -164,18 +244,20 @@ export type ValueType =
     | "string"
 
 export const ArrayInput: React.FC<ArrayInputProps> = (props: ArrayInputProps) => {
+    const [elems, setElems] = React.useState(props.elems)
+
+    const handleClick = () =>
+        setElems([...elems, createDefault(props.elemType, props.enumValues)]);
+
     return (
         <div className="is-expanded is-fullwidth">
             {
-                props.elems.map(elem =>
-                    <div className="is-flex is-fullwidth is-align-items-center is-justify-content-flex-end pb-1">
-                        <PropertyInputInner {...elem} />
-                        <FontAwesomeIcon icon={faGripVertical} className="has-text-grey-light flex-shrink ml-1 pl-1" />
-                    </div>
+                elems.map(elem =>
+                    <PropertyInputInner {...elem} isArrayElement />
                 )
             }
             <div className="is-expanded is-fullwidth">
-                <button className="button is-expanded is-fullwidth is-light">
+                <button className="button is-expanded is-fullwidth is-light" onClick={handleClick}>
                     Add item
                 </button>
             </div>
