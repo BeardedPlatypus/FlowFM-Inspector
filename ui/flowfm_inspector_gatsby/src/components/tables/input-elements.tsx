@@ -1,24 +1,36 @@
 import * as React from "react"
+import { useSpring, animated } from "react-spring"
+import useResizeAware from 'react-resize-aware';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGripVertical } from '@fortawesome/free-solid-svg-icons'
 
 interface InputElementProps {
     type: ValueType
     isArrayElement?: boolean
+    shouldAnimate?: boolean
     children?: React.ReactNode
 }
 
-const InputElement: React.FC<InputElementProps> = ({ isArrayElement, children }) => {
+const InputElement: React.FC<InputElementProps> = ({ isArrayElement, shouldAnimate, children }) => {
     const className = `is-flex is-align-items-center ${isArrayElement ? "mb-1 pb-1" : ""}`
 
+    const { opacity } = useSpring({
+        to: { opacity: 1 },
+        from: { opacity: shouldAnimate !== undefined && shouldAnimate ? 0 : 1 },
+        delay: 100
+    })
+
+
     return (
-        <div className={className}>
-            {children}
-            {
-                (isArrayElement !== undefined && isArrayElement) &&
-                <FontAwesomeIcon icon={faGripVertical} className="has-text-grey-light ml-1 pl-1" />
-            }
-        </div>
+        <animated.div style={{ opacity }}>
+            <div className={className}>
+                {children}
+                {
+                    (isArrayElement !== undefined && isArrayElement) &&
+                    <FontAwesomeIcon icon={faGripVertical} className="has-text-grey-light ml-1 pl-1" />
+                }
+            </div>
+        </animated.div>
     )
 }
 
@@ -246,16 +258,30 @@ export type ValueType =
 export const ArrayInput: React.FC<ArrayInputProps> = (props: ArrayInputProps) => {
     const [elems, setElems] = React.useState(props.elems)
 
-    const handleClick = () =>
-        setElems([...elems, createDefault(props.elemType, props.enumValues)]);
+    const [resizeListener, sizes] = useResizeAware();
+
+    const handleClick = () => {
+        const newElement = createDefault(props.elemType, props.enumValues)
+        newElement.shouldAnimate = true
+        setElems([...elems, newElement]);
+    }
+
+    const { maxHeight } = useSpring({
+        maxHeight: sizes.height
+    })
 
     return (
         <div className="is-expanded is-fullwidth">
-            {
-                elems.map(elem =>
-                    <PropertyInputInner {...elem} isArrayElement />
-                )
-            }
+            <div style={{ overflow: 'hidden' }}>
+                {resizeListener}
+                <animated.div style={{ maxHeight: maxHeight }}>
+                    {
+                        elems.map(elem =>
+                            <PropertyInputInner {...elem} isArrayElement />
+                        )
+                    }
+                </animated.div>
+            </div>
             <div className="is-expanded is-fullwidth">
                 <button className="button is-expanded is-fullwidth is-light" onClick={handleClick}>
                     Add item
