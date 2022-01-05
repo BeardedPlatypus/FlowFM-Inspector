@@ -2,19 +2,23 @@ import * as React from "react"
 import { useSpring, animated } from "react-spring"
 import useResizeAware from 'react-resize-aware';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGripVertical } from '@fortawesome/free-solid-svg-icons'
+import { faGripVertical, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import uniqid from "uniqid"
+import { useHover } from "use-events"
 
 interface InputElementProps {
     id: string
     type: ValueType
+
     isArrayElement?: boolean
+    removeItem?: (() => void)
+
     shouldAnimate?: boolean
     children?: React.ReactNode
 }
 
-const InputElement: React.FC<InputElementProps> = ({ isArrayElement, shouldAnimate, children }) => {
+const InputElement: React.FC<InputElementProps> = ({ isArrayElement, removeItem, shouldAnimate, children }) => {
     const className = `is-fullwidth is-flex is-align-items-center pl-0 pr-0 ${isArrayElement ? "pb-1" : ""}`
 
     const { opacity } = useSpring({
@@ -23,10 +27,30 @@ const InputElement: React.FC<InputElementProps> = ({ isArrayElement, shouldAnima
         delay: 100
     })
 
+    const [isHovered, hoverBind] = useHover();
+    const [resizeListener, sizes] = useResizeAware();
+
+    const { maxWidth, thrashOpacity } = useSpring({
+        maxWidth: isHovered ? sizes.width : 0,
+        thrashOpacity: isHovered ? 1 : 0,
+    })
 
     return (
         <animated.div style={{ opacity }}>
-            <div className={className}>
+            <div className={className} {...hoverBind}>
+                {
+                    (isArrayElement !== undefined && isArrayElement && removeItem !== undefined) &&
+                    <div>
+                        <animated.div style={{ maxWidth, opacity: thrashOpacity }}>
+                            <button className="button is-danger is-outlined is-flex-grow-0 mx-1"
+                                style={{ flexBasis: "0", position: "relative" }}
+                                onClick={removeItem}>
+                                {resizeListener}
+                                <FontAwesomeIcon icon={faTrash} />
+                            </button>
+                        </animated.div>
+                    </div>
+                }
                 {children}
                 {
                     (isArrayElement !== undefined && isArrayElement) &&
@@ -276,7 +300,8 @@ function reorder<T>(list: T[], startIndex: number, endIndex: number): T[] {
 };
 
 export const ArrayInput: React.FC<ArrayInputProps> = (props: ArrayInputProps) => {
-    const [elems, setElems] = React.useState(props.elems)
+    const [elems, setElems] = React.useState(props.elems);
+    const [isDragging, setIsDragging] = React.useState(false);
 
     const [resizeListener, sizes] = useResizeAware();
 
@@ -302,7 +327,22 @@ export const ArrayInput: React.FC<ArrayInputProps> = (props: ArrayInputProps) =>
             result.destination.index
         );
 
+        console.log(result)
+
         setElems(newElems);
+        setIsDragging(false);
+    }
+
+    function onDragStart(initial, provided) {
+        setIsDragging(true);
+    }
+
+    function fRemoveItem(index: number): (() => void) {
+        return () => {
+            const newElems = Array.from(elems);
+            newElems.splice(index, 1);
+            setElems(newElems)
+        }
     }
 
     return (
@@ -310,7 +350,7 @@ export const ArrayInput: React.FC<ArrayInputProps> = (props: ArrayInputProps) =>
             <div style={{ overflow: 'hidden' }}>
                 {resizeListener}
                 <animated.div style={{ maxHeight: maxHeight }}>
-                    <DragDropContext onDragEnd={onDragEnd}>
+                    <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
                         <Droppable droppableId="droppable">
                             {(provided, droppableSnapshot) => (
                                 <div
@@ -326,7 +366,9 @@ export const ArrayInput: React.FC<ArrayInputProps> = (props: ArrayInputProps) =>
                                                     {...provided.dragHandleProps}
                                                     style={provided.draggableProps.style}
                                                 >
-                                                    <PropertyInputInner {...elem} isArrayElement />
+                                                    <PropertyInputInner {...elem}
+                                                        isArrayElement
+                                                        removeItem={fRemoveItem(index)} />
                                                 </div>
                                             )}
                                         </Draggable>
@@ -344,8 +386,6 @@ export const ArrayInput: React.FC<ArrayInputProps> = (props: ArrayInputProps) =>
                     Add item
                 </button>
             </div>
-
-
         </div>
     )
 }
