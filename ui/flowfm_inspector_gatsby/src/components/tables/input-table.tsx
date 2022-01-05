@@ -3,6 +3,8 @@ import * as React from "react"
 import * as styles from "./input-table.module.scss"
 import * as InputElems from "./input-elements"
 
+import uniqid from "uniqid"
+
 
 // DataInterpretation
 export interface Schema {
@@ -53,17 +55,18 @@ interface RowDescription {
 }
 
 function getBaseValueProps(description: RowDescription, value: any): InputElems.InputBaseProps {
+    const id = uniqid();
     switch (description.valueType) {
         case "number":
-            return { type: "number", value: value as number }
+            return { id: id, type: "number", value: value as number }
         case "boolean":
-            return { type: "boolean", value: value as boolean }
+            return { id: id, type: "boolean", value: value as boolean }
         case "enum":
-            return { type: "enum", value: value as string, enumValues: description.enumValues }
+            return { id: id, type: "enum", value: value as string, enumValues: description.enumValues }
         case "path":
-            return { type: "path", value: value as { filepath: string } }
+            return { id: id, type: "path", value: value as { filepath: string } }
         case "string":
-            return { type: "string", value: String(value) }
+            return { id: id, type: "string", value: String(value) }
     }
 }
 

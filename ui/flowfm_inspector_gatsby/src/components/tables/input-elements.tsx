@@ -3,8 +3,11 @@ import { useSpring, animated } from "react-spring"
 import useResizeAware from 'react-resize-aware';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGripVertical } from '@fortawesome/free-solid-svg-icons'
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import uniqid from "uniqid"
 
 interface InputElementProps {
+    id: string
     type: ValueType
     isArrayElement?: boolean
     shouldAnimate?: boolean
@@ -12,7 +15,7 @@ interface InputElementProps {
 }
 
 const InputElement: React.FC<InputElementProps> = ({ isArrayElement, shouldAnimate, children }) => {
-    const className = `is-flex is-align-items-center ${isArrayElement ? "mb-1 pb-1" : ""}`
+    const className = `is-fullwidth is-flex is-align-items-center pl-0 pr-0 ${isArrayElement ? "pb-1" : ""}`
 
     const { opacity } = useSpring({
         to: { opacity: 1 },
@@ -27,7 +30,7 @@ const InputElement: React.FC<InputElementProps> = ({ isArrayElement, shouldAnima
                 {children}
                 {
                     (isArrayElement !== undefined && isArrayElement) &&
-                    <FontAwesomeIcon icon={faGripVertical} className="has-text-grey-light ml-1 pl-1" />
+                    <FontAwesomeIcon icon={faGripVertical} className="has-text-grey-light is-flex-grow-0 ml-1 pl-1" style={{ flexBasis: "0" }} />
                 }
             </div>
         </animated.div>
@@ -41,6 +44,7 @@ export interface NumberInputProps extends InputElementProps {
 
 function defaultNumberInputProps(): NumberInputProps {
     return {
+        id: uniqid(),
         type: "number",
         value: 1.0,
     }
@@ -54,6 +58,7 @@ export const NumberInput: React.FC<NumberInputProps> = (props: NumberInputProps)
     return (
         <InputElement {...props}>
             <input className="input has-text-right"
+                style={{ flexBasis: "auto" }}
                 value={props.value == null ? "" : props.value}
                 onChange={handleChange}
                 type="number" />
@@ -69,6 +74,7 @@ export interface EnumInputProps extends InputElementProps {
 
 function defaultEnumInputProps(enumValues: string[]): EnumInputProps {
     return {
+        id: uniqid(),
         type: "enum",
         value: enumValues[0],
         enumValues: enumValues,
@@ -100,6 +106,7 @@ export interface BooleanInputProps extends InputElementProps {
 
 function defaultBooleanInputProps(): BooleanInputProps {
     return {
+        id: uniqid(),
         type: "boolean",
         value: false,
     }
@@ -131,6 +138,7 @@ export interface PathInputProps extends InputElementProps {
 
 function defaultPathInputProps(): PathInputProps {
     return {
+        id: uniqid(),
         type: "path",
         value: null,
     }
@@ -154,6 +162,7 @@ export const PathInput: React.FC<PathInputProps> = (props: PathInputProps) => {
     return (
         <InputElement {...props}>
             <input className="input has-text-right"
+                style={{ flexBasis: "auto" }}
                 value={props.value == null ? "" : props.value.filepath}
                 onChange={handleChange}
                 type="text" />
@@ -163,6 +172,7 @@ export const PathInput: React.FC<PathInputProps> = (props: PathInputProps) => {
                 style={{ display: 'none' }}
                 onChange={onFileChange} />
             <button className="button"
+                style={{ flexBasis: "auto" }}
                 onClick={onButtonClick}>
                 ...
             </button>
@@ -177,6 +187,7 @@ export interface StringInputProps extends InputElementProps {
 
 function defaultStringInputProps(): StringInputProps {
     return {
+        id: uniqid(),
         type: "string",
         value: "",
     }
@@ -255,6 +266,15 @@ export type ValueType =
     | "path"
     | "string"
 
+
+function reorder<T>(list: T[], startIndex: number, endIndex: number): T[] {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+
+    return result;
+};
+
 export const ArrayInput: React.FC<ArrayInputProps> = (props: ArrayInputProps) => {
     const [elems, setElems] = React.useState(props.elems)
 
@@ -270,23 +290,62 @@ export const ArrayInput: React.FC<ArrayInputProps> = (props: ArrayInputProps) =>
         maxHeight: sizes.height
     })
 
+    function onDragEnd(result) {
+
+        if (!result.destination) {
+            return;
+        }
+
+        const newElems = reorder(
+            elems,
+            result.source.index,
+            result.destination.index
+        );
+
+        setElems(newElems);
+    }
+
     return (
         <div className="is-expanded is-fullwidth">
             <div style={{ overflow: 'hidden' }}>
                 {resizeListener}
                 <animated.div style={{ maxHeight: maxHeight }}>
-                    {
-                        elems.map(elem =>
-                            <PropertyInputInner {...elem} isArrayElement />
-                        )
-                    }
+                    <DragDropContext onDragEnd={onDragEnd}>
+                        <Droppable droppableId="droppable">
+                            {(provided, droppableSnapshot) => (
+                                <div
+                                    {...provided.droppableProps}
+                                    ref={provided.innerRef}
+                                >
+                                    {elems.map((elem, index) => (
+                                        <Draggable key={elem.id} draggableId={elem.id} index={index}>
+                                            {(provided, snapshot) => (
+                                                <div
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                    {...provided.dragHandleProps}
+                                                    style={provided.draggableProps.style}
+                                                >
+                                                    <PropertyInputInner {...elem} isArrayElement />
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                    ))}
+                                    {provided.placeholder}
+                                </div>
+                            )}
+                        </Droppable>
+                    </DragDropContext>
                 </animated.div>
             </div>
+
             <div className="is-expanded is-fullwidth">
                 <button className="button is-expanded is-fullwidth is-light" onClick={handleClick}>
                     Add item
                 </button>
             </div>
+
+
         </div>
     )
 }
