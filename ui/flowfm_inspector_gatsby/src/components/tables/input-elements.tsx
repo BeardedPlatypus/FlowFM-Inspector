@@ -33,6 +33,11 @@ const InputElement: React.FC<InputElementProps> = ({ isArrayElement, removeItem,
     const { maxWidth, thrashOpacity } = useSpring({
         maxWidth: isHovered ? sizes.width : 0,
         thrashOpacity: isHovered ? 1 : 0,
+        delay: 50,
+    })
+
+    const { margin } = useSpring({
+        margin: isHovered ? "0.5rem" : "0rem",
     })
 
     return (
@@ -41,7 +46,7 @@ const InputElement: React.FC<InputElementProps> = ({ isArrayElement, removeItem,
                 {
                     (isArrayElement !== undefined && isArrayElement && removeItem !== undefined) &&
                     <div>
-                        <animated.div style={{ maxWidth, opacity: thrashOpacity }}>
+                        <animated.div style={{ maxWidth, opacity: thrashOpacity, marginRight: margin }}>
                             <button className="button is-danger is-outlined is-flex-grow-0 mx-1"
                                 style={{ flexBasis: "0", position: "relative" }}
                                 onClick={removeItem}>
