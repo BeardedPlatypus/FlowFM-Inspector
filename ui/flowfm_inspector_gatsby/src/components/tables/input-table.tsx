@@ -3,6 +3,142 @@ import * as React from "react"
 import * as styles from "./input-table.module.scss"
 import * as InputElems from "./input-elements"
 
+import uniqid from "uniqid"
+
+
+// DataInterpretation
+export interface Schema {
+    title: string
+    properties: { [key: string]: ValueDescription }
+}
+
+export interface Model {
+    comments: { [key: string]: string }
+    [key: string]: InputElems.SupportedType | { [key: string]: string }
+}
+
+export type BaseValueDescription =
+    | { enum: string[] }
+    | { type: string, format: string }
+    | { type: string }
+
+export type CompositeValueDescription =
+    | { items: BaseValueDescription }
+
+export type ValueDescription =
+    | BaseValueDescription
+    | CompositeValueDescription
+
+function toValueType(val: string): InputElems.ValueType {
+    switch (val) {
+        case "number":
+        case "integer":
+            return "number";
+        case "enum":
+            return "enum";
+        case "boolean":
+            return "boolean";
+        case "path":
+            return "path";
+        case "string":
+        default:
+            return "string";
+    }
+}
+
+interface RowDescription {
+    table: string
+    rowKey: string
+    valueType: InputElems.ValueType
+    isArray: boolean
+    enumValues: string[]
+}
+
+function getBaseValueProps(description: RowDescription, value: any): InputElems.InputBaseProps {
+    const id = uniqid();
+    switch (description.valueType) {
+        case "number":
+            return { id: id, type: "number", value: value as number }
+        case "boolean":
+            return { id: id, type: "boolean", value: value as boolean }
+        case "enum":
+            return { id: id, type: "enum", value: value as string, enumValues: description.enumValues }
+        case "path":
+            return { id: id, type: "path", value: value as { filepath: string } }
+        case "string":
+            return { id: id, type: "string", value: String(value) }
+    }
+}
+
+function getCompositeValueProps(description: RowDescription, value: any): InputElems.ArrayInputProps {
+    const elems = value as any[] == null ? [] : value as any[]
+
+    return {
+        type: "array",
+        elemType: description.valueType,
+        elems: elems.map(v => getBaseValueProps(description, v)),
+        enumValues: description.enumValues
+    }
+}
+
+function getValueProps(description: RowDescription, model: Model): InputElems.InputProps {
+    const key = description.rowKey
+
+    if (!(key in model)) {
+        throw new Error(`The key ${key} is not available in the provided model.`)
+    }
+
+    const value = model[key]
+
+    if (description.isArray) {
+        return getCompositeValueProps(description, value)
+    }
+    else {
+        return getBaseValueProps(description, value)
+    }
+}
+
+interface CommentData {
+    comments?: { [key: string]: string }
+}
+
+function getComment(key: string, data?: CommentData): string {
+    // Comments are stored with lowercase keys.
+    return (data == null || data.comments == null || data.comments[key.toLowerCase()] == null)
+        ? ""
+        : data.comments[key.toLowerCase()];
+}
+
+function getRows({ properties, title }: Schema): RowDescription[] {
+    function getBaseValueType(value: BaseValueDescription): InputElems.ValueType {
+        const is_enum = "enum" in value
+        if (is_enum) return "enum"
+
+        const is_path = value.type === "string" && "format" in value && value.format === "path"
+        if (is_path) return "path"
+
+        return toValueType(value.type)
+    }
+
+    function getValueType(value: ValueDescription): InputElems.ValueType {
+        const is_array = "items" in value
+        if (is_array) return getBaseValueType(value.items)
+
+        return getBaseValueType(value)
+    }
+
+    function toRow(tableTitle: string, [key, value]: [string, ValueDescription]): RowDescription {
+        return {
+            table: tableTitle,
+            rowKey: key,
+            valueType: getValueType(value),
+            isArray: "items" in value,
+            enumValues: "enum" in value ? value.enum : [],
+        }
+    }
+
+    return Object.entries(properties).map(v => toRow(title, v))
+}
 
 interface TableRowProps {
     rowKey: string
@@ -24,144 +160,6 @@ const TableRow: React.FC<TableRowProps> = (props: TableRowProps) => {
     )
 }
 
-const PropertyValue: React.FC<InputElems.InputProps> = (props: InputElems.InputProps) => {
-    switch (props.type) {
-        case "number":
-            return (
-                <InputElems.Control>
-                    <InputElems.NumberInput {...props} />
-                </InputElems.Control>
-            )
-        case "boolean":
-            return (
-                <InputElems.Control>
-                    <InputElems.BooleanInput {...props} />
-                </InputElems.Control>
-            )
-        case "enum":
-            return (
-                <InputElems.Control>
-                    <InputElems.EnumInput {...props} />
-                </InputElems.Control>
-            )
-        case "path":
-            return (
-                <InputElems.Control>
-                    <InputElems.PathInput {...props} />
-                </InputElems.Control>
-            )
-        case "string":
-            return (
-                <InputElems.Control>
-                    <InputElems.StringInput {...props} />
-                </InputElems.Control>
-            )
-    }
-}
-
-export type ValueDescription =
-    | { enum: string[] }
-    | { type: string, format: string }
-    | { type: string }
-
-export interface Schema {
-    title: string
-    properties: { [key: string]: ValueDescription }
-}
-
-export interface Model {
-    comments: { [key: string]: string }
-    [key: string]: InputElems.SupportedType | { [key: string]: string }
-}
-
-interface CommentData {
-    comments?: { [key: string]: string }
-}
-
-function getComment(key: string, data?: CommentData): string {
-    // Comments are stored with lowercase keys.
-    return (data == null || data.comments == null || data.comments[key.toLowerCase()] == null)
-        ? ""
-        : data.comments[key.toLowerCase()];
-}
-
-function getValueProps(description: RowDescription, model: Model): InputElems.InputProps {
-    const key = description.rowKey
-
-    if (!(key in model)) {
-        throw new Error(`The key ${key} is not available in the provided model.`)
-    }
-
-    const valueRaw: any = model[key]
-
-    switch (description.valueType) {
-        case "number":
-            return { type: "number", value: valueRaw as number }
-        case "boolean":
-            return { type: "boolean", value: valueRaw as boolean }
-        case "enum":
-            return { type: "enum", value: valueRaw as string, enumValues: description.enumValues }
-        case "path":
-            return { type: "path", value: valueRaw as { filepath: string } }
-        case "string":
-            return { type: "string", value: String(valueRaw) }
-    }
-}
-
-type ValueType =
-    | "number"
-    | "enum"
-    | "boolean"
-    | "path"
-    | "string"
-
-function toValueType(val: string): ValueType {
-    switch (val) {
-        case "number":
-        case "integer":
-            return "number";
-        case "enum":
-            return "enum";
-        case "boolean":
-            return "boolean";
-        case "path":
-            return "path";
-        case "string":
-        default:
-            return "string"
-    }
-}
-
-interface RowDescription {
-    table: string
-    rowKey: string
-    valueType: ValueType
-    enumValues: string[]
-}
-
-function getRows({ properties, title }: Schema): RowDescription[] {
-    function getValueType(value: ValueDescription): ValueType {
-        const is_enum = "enum" in value
-        if (is_enum) return "enum"
-
-        const is_path = value.type === "string" && "format" in value && value.format === "path"
-        if (is_path) return "path"
-
-        return toValueType(value.type)
-    }
-
-    function toRow(tableTitle: string, [key, value]: [string, ValueDescription]): RowDescription {
-        return {
-            table: tableTitle,
-            rowKey: key,
-            valueType: getValueType(value),
-            enumValues: "enum" in value ? value.enum : [],
-        }
-    }
-
-    return Object.entries(properties).map(v => toRow(title, v))
-}
-
 export interface TableProps {
     model: Model
     schema: Schema
@@ -175,7 +173,7 @@ export const InputTable: React.FC<TableProps> = (props: TableProps) => {
             <TableRow key={`Table:${props.schema.title}:${description.rowKey}`}
                 comment={getComment(description.rowKey, props.model)}
                 rowKey={description.rowKey}>
-                <PropertyValue {...valueProps} />
+                <InputElems.PropertyInput {...valueProps} />
             </TableRow>
         )
     }

@@ -10,6 +10,7 @@
     "@fortawesome/free-regular-svg-icons": "^5.15.4",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.16",
+    "@types/react-beautiful-dnd": "^13.1.2",
     "bulma": "^0.9.3",
     "gatsby": "^4.4.0",
     "gatsby-plugin-fontawesome-css": "^1.2.0",
@@ -25,10 +26,13 @@
     "node-sass": "^6.0.1",
     "prop-types": "^15.7.2",
     "react": "^17.0.1",
+    "react-beautiful-dnd": "^13.1.0",
     "react-dom": "^17.0.1",
     "react-helmet": "^6.1.0",
     "react-resize-aware": "^3.1.1",
-    "react-spring": "^9.3.3"
+    "react-spring": "^9.3.3",
+    "uniqid": "^5.4.0",
+    "use-events": "^1.4.2"
   },
   "devDependencies": {
     "prettier": "^2.4.1"
