@@ -21,14 +21,20 @@ interface InputElementProps {
 const InputElement: React.FC<InputElementProps> = ({ isArrayElement, removeItem, shouldAnimate, children }) => {
     const className = `is-fullwidth is-flex is-align-items-center pl-0 pr-0 ${isArrayElement ? "pb-1" : ""}`
 
+    const [isVisible, setIsVisible] = React.useState(!shouldAnimate)
+
     const { opacity } = useSpring({
-        to: { opacity: 1 },
-        from: { opacity: shouldAnimate !== undefined && shouldAnimate ? 0 : 1 },
+        opacity: isVisible ? 1 : 0,
         delay: 100
     })
 
+    React.useEffect(() => {
+        if (!isVisible) setIsVisible(true);
+    }, [])
+
     const [isHovered, hoverBind] = useHover();
     const [resizeListener, sizes] = useResizeAware();
+
 
     const { maxWidth, thrashOpacity } = useSpring({
         maxWidth: isHovered ? sizes.width : 0,
@@ -316,8 +322,8 @@ export const ArrayInput: React.FC<ArrayInputProps> = (props: ArrayInputProps) =>
         setElems([...elems, newElement]);
     }
 
-    const { maxHeight } = useSpring({
-        maxHeight: sizes.height
+    const { height } = useSpring({
+        height: sizes.height
     })
 
     function onDragEnd(result) {
@@ -352,9 +358,9 @@ export const ArrayInput: React.FC<ArrayInputProps> = (props: ArrayInputProps) =>
 
     return (
         <div className="is-expanded is-fullwidth">
-            <div style={{ overflow: 'hidden' }}>
-                {resizeListener}
-                <animated.div style={{ maxHeight: maxHeight }}>
+            <animated.div style={{ height }}>
+                <div style={{ overflow: 'hidden', position: 'relative' }}>
+                    {resizeListener}
                     <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
                         <Droppable droppableId="droppable">
                             {(provided, droppableSnapshot) => (
@@ -383,8 +389,8 @@ export const ArrayInput: React.FC<ArrayInputProps> = (props: ArrayInputProps) =>
                             )}
                         </Droppable>
                     </DragDropContext>
-                </animated.div>
-            </div>
+                </div>
+            </animated.div>
 
             <div className="is-expanded is-fullwidth">
                 <button className="button is-expanded is-fullwidth is-light" onClick={handleClick}>
