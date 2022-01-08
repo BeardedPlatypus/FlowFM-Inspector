@@ -144,6 +144,7 @@ interface TableRowProps {
     rowKey: string
     comment?: string
     children?: React.ReactNode
+    updateComment(value: string): void
 }
 
 const TableRow: React.FC<TableRowProps> = (props: TableRowProps) => {
@@ -153,7 +154,7 @@ const TableRow: React.FC<TableRowProps> = (props: TableRowProps) => {
             <td className={styles.valueColumn}>{props.children}</td>
             <td className={styles.commentColumn}>
                 <InputElems.Control>
-                    <InputElems.CommentInput comment={props.comment} />
+                    <InputElems.CommentInput comment={props.comment} updateComment={props.updateComment} />
                 </InputElems.Control>
             </td>
         </tr>
@@ -163,14 +164,19 @@ const TableRow: React.FC<TableRowProps> = (props: TableRowProps) => {
 export interface TableProps {
     model: Model
     schema: Schema
+    updateComment: (modelName: string, fieldName: string, value: string) => void
 }
 
 export const InputTable: React.FC<TableProps> = (props: TableProps) => {
     function generateTableRow(description: RowDescription) {
         let valueProps = getValueProps(description, props.model)
 
+        //const updateValue = (newValue) => (props.updateValue(description.table.toLowerCase(), description.rowKey.toLowerCase(), newValue, description.valueType))
+        const updateComment = (newComment) => (props.updateComment(description.table.toLowerCase(), description.rowKey.toLowerCase(), newComment))
+
         return (
             <TableRow key={`Table:${props.schema.title}:${description.rowKey}`}
+                updateComment={updateComment}
                 comment={getComment(description.rowKey, props.model)}
                 rowKey={description.rowKey}>
                 <InputElems.PropertyInput {...valueProps} />

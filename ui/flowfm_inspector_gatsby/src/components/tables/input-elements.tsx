@@ -7,6 +7,8 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import uniqid from "uniqid"
 import { useHover } from "use-events"
 
+const wait_interval = 500;
+
 interface InputElementProps {
     id: string
     type: ValueType
@@ -16,6 +18,8 @@ interface InputElementProps {
 
     shouldAnimate?: boolean
     children?: React.ReactNode
+
+    // updateValue(value: SupportedType): void
 }
 
 const InputElement: React.FC<InputElementProps> = ({ isArrayElement, removeItem, shouldAnimate, children }) => {
@@ -243,20 +247,70 @@ export const StringInput: React.FC<StringInputProps> = (props: StringInputProps)
     )
 }
 
-export interface CommentInputProps {
-    comment?: string
+export interface SyncedInputProps<T> {
+    className?: string
+    type: string
+
+    outerValue: T
+    updateValue(newValue: T): void
 }
 
-export const CommentInput: React.FC<CommentInputProps> = (props: CommentInputProps) => {
+type InputValues =
+    | string
+    | number
+    | readonly string[]
+
+const SyncedInput = <T extends InputValues,>(props: SyncedInputProps<T>) => {
+    const [submitTimerID, setSubmitTimerID] = React.useState<(NodeJS.Timeout | null)>(null)
+    const [currValue, setCurrentValue] = React.useState(props.outerValue)
+
+    const submitValue = (innerValue: T) => {
+        // Ignore the new comment if it is the same as the last set value.
+        if (innerValue == props.outerValue) return;
+
+        props.updateValue(innerValue)
+        setSubmitTimerID(null)
+    }
+
+    const scheduleSubmitValue = (newValue: T) => {
+        if (submitTimerID != null) clearTimeout(submitTimerID)
+        setTimeout(() => submitValue(newValue))
+    }
+
+
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        props.comment = event.target.value
+        const innerValue = event.target.value as T
+
+        setCurrentValue(innerValue)
+        scheduleSubmitValue(innerValue)
+    }
+
+    const handleKeyDown = (event: React.KeyboardEvent) => {
+        if (event.key == "Enter") submitValue(currValue)
     }
 
     return (
-        <input className="input has-text-left"
-            value={props.comment == null ? "" : props.comment}
+        <input
+            value={currValue}
             onChange={handleChange}
-            type="text" />
+            onKeyDown={handleKeyDown}
+            type={props.type}
+            className={props.className} />
+    )
+}
+
+export interface CommentInputProps {
+    comment?: string
+    updateComment(newValue: string): void
+}
+
+export const CommentInput: React.FC<CommentInputProps> = (props: CommentInputProps) => {
+    return (
+        <SyncedInput
+            className="input has-text-left"
+            outerValue={props.comment}
+            type="text"
+            updateValue={props.updateComment} />
     )
 }
 
@@ -337,8 +391,6 @@ export const ArrayInput: React.FC<ArrayInputProps> = (props: ArrayInputProps) =>
             result.source.index,
             result.destination.index
         );
-
-        console.log(result)
 
         setElems(newElems);
         setIsDragging(false);
