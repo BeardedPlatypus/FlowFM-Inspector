@@ -1,7 +1,8 @@
+from enum import Enum
 from pathlib import Path
-from typing import Dict, Iterable, Type
+from typing import Dict, Iterable, Literal, Type, Union
 from uuid import uuid4
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from hydrolib.core.basemodel import FileModel
 from hydrolib.core.io.mdu.models import (
@@ -132,3 +133,48 @@ async def request_model_keys():
 async def request_specific_model(id: UUID4):
     # TODO: make this more generic with a separate function
     return model_mapping[id].dict(by_alias=True)
+
+
+SubmodelName = Literal[
+    "general",
+    "geometry",
+    "volumetables",
+    "numerics",
+    "physics",
+    "sediment",
+    "waves",
+    "time",
+    "restart",
+    "externalforcing",
+    "hydrology",
+    "trachytopes",
+    "output",
+]
+
+
+class DataSpecification(str, Enum):
+    comments = "comments"
+    values = "values"
+
+
+@app.get("/api/models/{id}/{data_type}")
+async def get_model_field(
+    id: UUID4, data_type: DataSpecification, submodel: SubmodelName, field: str
+):
+    model = model_mapping[id]
+    submodel_ = getattr(model, submodel)
+
+    value = None
+
+    if data_type == DataSpecification.comments:
+        value = getattr(submodel_.comments, field)
+    elif data_type == DataSpecification.values:
+        value = getattr(submodel_, field)
+
+    return {
+        "id": id,
+        "subModel": submodel,
+        "field": field,
+        "type": str(data_type),
+        "value": value,
+    }
