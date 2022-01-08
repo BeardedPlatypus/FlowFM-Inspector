@@ -1,6 +1,6 @@
 from enum import Enum
 from pathlib import Path
-from typing import Dict, Iterable, Literal, Type, Union
+from typing import Dict, Iterable, List, Literal, Type, Union
 from uuid import uuid4
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -178,3 +178,62 @@ async def get_model_field(
         "type": str(data_type),
         "value": value,
     }
+
+
+class ValueType(str, Enum):
+    number = "number"
+    enum = "enum"
+    boolean = "boolean"
+    path = "path"
+    string = "string"
+
+
+class FilePathModel(BaseModel):
+    filepath: str
+
+
+class SetFieldValueBody(BaseModel):
+    value: Union[
+        int,
+        float,
+        bool,
+        str,
+        List[int],
+        List[float],
+        List[bool],
+        List[str],
+        FilePathModel,
+        None,
+    ]
+    valuetype: ValueType
+
+
+class SetFieldCommentBody(BaseModel):
+    value: str
+
+
+@app.put("/api/models/{id}/comments")
+async def set_model_field_comment(
+    id: UUID4, submodel: SubmodelName, field: str, body: SetFieldCommentBody
+):
+    model = model_mapping[id]
+    submodel_ = getattr(model, submodel)
+
+    setattr(submodel_.comments, field, body.value)
+    return {"result": body.value}
+
+
+@app.put("/api/models/{id}/values")
+async def set_model_field_value(
+    id: UUID4, submodel: SubmodelName, field: str, body: SetFieldValueBody
+):
+    model = model_mapping[id]
+    submodel_ = getattr(model, submodel)
+
+    if body.valuetype == ValueType.path:
+        subsubmodel = getattr(submodel_, field)
+        setattr(subsubmodel, "filepath", body.value.filepath)
+        return {"result": {"filepath": body.value.filepath}}
+    else:
+        setattr(submodel_, field, body.value)
+        return {"result": body.value}
