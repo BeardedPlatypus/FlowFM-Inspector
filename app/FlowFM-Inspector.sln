@@ -7,6 +7,8 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FlowFM-Inspector", "FlowFM-
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FlowFM-Inspector.Presentation.Main", "FlowFM-Inspector.Presentation.Main\FlowFM-Inspector.Presentation.Main.fsproj", "{348F9286-A09D-4440-9823-6F6CDF4F43E8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlowFM-Inspector.Presentation.Views", "FlowFM-Inspector.Presentation.Views\FlowFM-Inspector.Presentation.Views.csproj", "{5CA49C8D-13FF-4FCB-94DC-6BF565C52811}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{348F9286-A09D-4440-9823-6F6CDF4F43E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{348F9286-A09D-4440-9823-6F6CDF4F43E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{348F9286-A09D-4440-9823-6F6CDF4F43E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CA49C8D-13FF-4FCB-94DC-6BF565C52811}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CA49C8D-13FF-4FCB-94DC-6BF565C52811}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CA49C8D-13FF-4FCB-94DC-6BF565C52811}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CA49C8D-13FF-4FCB-94DC-6BF565C52811}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
