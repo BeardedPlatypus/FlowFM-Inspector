@@ -13,4 +13,8 @@
     <Compile Include="App.fs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Elmish.WPF" Version="3.5.8" />
+  </ItemGroup>
+
 </Project>
