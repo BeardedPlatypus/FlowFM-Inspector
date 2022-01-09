@@ -32,7 +32,8 @@ NetworkModel.__fields__.pop("network", None)
 app = FastAPI()
 
 
-origins = ["http://localhost:8002", "localhost:8002"]
+# origins = ["http://localhost:8002", "localhost:8002"]
+origins = ["*"]
 
 
 app.add_middleware(
