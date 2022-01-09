@@ -17,4 +17,8 @@
     <PackageReference Include="Elmish.WPF" Version="3.5.8" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FlowFM-Inspector.Presentation.Main\FlowFM-Inspector.Presentation.Main.fsproj" />
+  </ItemGroup>
+
 </Project>
