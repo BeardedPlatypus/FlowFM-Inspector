@@ -2,12 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
-    <RootNamespace>FlowFM_Inspector.Presentation.Main</RootNamespace>
+    <RootNamespace>FlowFM_Inspector.Presentation</RootNamespace>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Library.fs" />
+    <Compile Include="Main.fs" />
   </ItemGroup>
 
   <ItemGroup>
