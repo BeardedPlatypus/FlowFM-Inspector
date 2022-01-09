@@ -54,47 +54,55 @@ interface RowDescription {
     enumValues: string[]
 }
 
-function getBaseValueProps(description: RowDescription, value: any): InputElems.InputBaseProps {
+function getBaseValueProps(
+    description: RowDescription,
+    value: any,
+    updateValue: InputElems.UpdateValueFunc
+): InputElems.InputBaseProps {
     const id = uniqid();
     switch (description.valueType) {
         case "number":
-            return { id: id, type: "number", value: value as number }
+            return { id: id, type: "number", value: value as number, updateValue: updateValue }
         case "boolean":
-            return { id: id, type: "boolean", value: value as boolean }
+            return { id: id, type: "boolean", value: value as boolean, updateValue: updateValue }
         case "enum":
-            return { id: id, type: "enum", value: value as string, enumValues: description.enumValues }
+            return { id: id, type: "enum", value: value as string, enumValues: description.enumValues, updateValue: updateValue }
         case "path":
-            return { id: id, type: "path", value: value as { filepath: string } }
+            return { id: id, type: "path", value: value as { filepath: string }, updateValue: updateValue }
         case "string":
-            return { id: id, type: "string", value: String(value) }
+            return { id: id, type: "string", value: String(value), updateValue: updateValue }
     }
 }
 
-function getCompositeValueProps(description: RowDescription, value: any): InputElems.ArrayInputProps {
+function getCompositeValueProps(description: RowDescription, value: any, updateValue: (value: InputElems.BaseSupportedType[]) => void): InputElems.ArrayInputProps {
     const elems = value as any[] == null ? [] : value as any[]
 
     return {
         type: "array",
         elemType: description.valueType,
-        elems: elems.map(v => getBaseValueProps(description, v)),
-        enumValues: description.enumValues
+        elems: elems,
+        enumValues: description.enumValues,
+        updateValue: updateValue
     }
 }
 
-function getValueProps(description: RowDescription, model: Model): InputElems.InputProps {
+function getValueProps(description: RowDescription, model: Model, updateValue: (value: InputElems.SupportedType) => void): InputElems.InputProps {
     const key = description.rowKey
 
-    if (!(key in model)) {
-        throw new Error(`The key ${key} is not available in the provided model.`)
+    let value;
+    if (key in model) {
+        value = model[key]
+    } else {
+        console.warn(`The key ${key} is not available in the provided model.`)
+        value = null
     }
 
-    const value = model[key]
 
     if (description.isArray) {
-        return getCompositeValueProps(description, value)
+        return getCompositeValueProps(description, value, updateValue)
     }
     else {
-        return getBaseValueProps(description, value)
+        return getBaseValueProps(description, value, updateValue)
     }
 }
 
@@ -164,14 +172,15 @@ const TableRow: React.FC<TableRowProps> = (props: TableRowProps) => {
 export interface TableProps {
     model: Model
     schema: Schema
+    updateValue: (modelName: string, fieldName: string, value: InputElems.SupportedType, valueType: InputElems.ValueType) => void
     updateComment: (modelName: string, fieldName: string, value: string) => void
 }
 
 export const InputTable: React.FC<TableProps> = (props: TableProps) => {
     function generateTableRow(description: RowDescription) {
-        let valueProps = getValueProps(description, props.model)
+        const updateValue = (newValue) => (props.updateValue(description.table.toLowerCase(), description.rowKey, newValue, description.valueType))
+        let valueProps = getValueProps(description, props.model, updateValue)
 
-        //const updateValue = (newValue) => (props.updateValue(description.table.toLowerCase(), description.rowKey.toLowerCase(), newValue, description.valueType))
         const updateComment = (newComment) => (props.updateComment(description.table.toLowerCase(), description.rowKey.toLowerCase(), newComment))
 
         return (

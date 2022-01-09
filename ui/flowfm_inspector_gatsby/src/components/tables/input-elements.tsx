@@ -9,8 +9,11 @@ import { useHover } from "use-events"
 
 const wait_interval = 500;
 
+export type UpdateValueFunc = (value: BaseSupportedType) => void
+
 interface InputElementProps {
     id: string
+    value: BaseSupportedType
     type: ValueType
 
     isArrayElement?: boolean
@@ -18,8 +21,7 @@ interface InputElementProps {
 
     shouldAnimate?: boolean
     children?: React.ReactNode
-
-    // updateValue(value: SupportedType): void
+    updateValue: UpdateValueFunc
 }
 
 const InputElement: React.FC<InputElementProps> = ({ isArrayElement, removeItem, shouldAnimate, children }) => {
@@ -81,26 +83,25 @@ export interface NumberInputProps extends InputElementProps {
     value: number;
 }
 
-function defaultNumberInputProps(): NumberInputProps {
+function defaultNumberInputProps(updateValue: (id: string) => UpdateValueFunc): NumberInputProps {
+    const id = uniqid()
     return {
-        id: uniqid(),
+        id: id,
         type: "number",
         value: 1.0,
+        updateValue: (value) => (updateValue(id)(value))
     }
 }
 
 export const NumberInput: React.FC<NumberInputProps> = (props: NumberInputProps) => {
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        props.value = Number(event.target.value)
-    }
-
     return (
         <InputElement {...props}>
-            <input className="input has-text-right"
+            <SyncedInput
+                className="input has-text-right"
                 style={{ flexBasis: "auto" }}
-                value={props.value == null ? "" : props.value}
-                onChange={handleChange}
-                type="number" />
+                outerValue={props.value == null ? "" : props.value}
+                type="number"
+                updateValue={props.updateValue} />
         </InputElement>
     )
 }
@@ -111,25 +112,34 @@ export interface EnumInputProps extends InputElementProps {
     enumValues: string[];
 }
 
-function defaultEnumInputProps(enumValues: string[]): EnumInputProps {
+function defaultEnumInputProps(enumValues: string[], updateValue: (id: string) => UpdateValueFunc): EnumInputProps {
+    const id = uniqid()
     return {
-        id: uniqid(),
+        id: id,
         type: "enum",
         value: enumValues[0],
         enumValues: enumValues,
+        updateValue: updateValue(id),
     }
 }
 
 export const EnumInput: React.FC<EnumInputProps> = (props: EnumInputProps) => {
+    const [selectedValue, setSelectedValue] = React.useState(props.value)
+
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        props.value = event.target.value
+        const newSelectedValue = event.target.value
+
+        if (newSelectedValue === selectedValue) return;
+
+        setSelectedValue(newSelectedValue)
+        props.updateValue(newSelectedValue)
     }
 
     return (
         <InputElement {...props}>
             <div className="select is-fullwidth">
                 <select className="has-text-right"
-                    value={props.value}
+                    value={selectedValue}
                     onChange={handleChange}>
                     {props.enumValues.map(v => <option key={String(v)} value={v}>{v}</option>)}
                 </select>
@@ -143,24 +153,34 @@ export interface BooleanInputProps extends InputElementProps {
     value: boolean;
 }
 
-function defaultBooleanInputProps(): BooleanInputProps {
+function defaultBooleanInputProps(updateValue: (id: string) => UpdateValueFunc): BooleanInputProps {
+    const id = uniqid()
     return {
-        id: uniqid(),
+        id: id,
         type: "boolean",
         value: false,
+        updateValue: updateValue(id)
     }
 }
 
 export const BooleanInput: React.FC<BooleanInputProps> = (props: BooleanInputProps) => {
+    const [selectedValue, setSelectedValue] = React.useState<boolean>(props.value)
+
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        props.value = Boolean(event.target.value)
+        console.log(event.target.value)
+        const newSelectedValue = event.target.value == "true"
+
+        if (newSelectedValue === selectedValue) return;
+
+        setSelectedValue(newSelectedValue)
+        props.updateValue(newSelectedValue)
     }
 
     return (
         <InputElement {...props}>
             <div className="select is-fullwidth">
                 <select className="has-text-right"
-                    value={String(props.value)}
+                    value={String(selectedValue)}
                     onChange={handleChange}>
                     <option value={String(true)}>True</option>
                     <option value={String(false)}>False</option>
@@ -175,14 +195,18 @@ export interface PathInputProps extends InputElementProps {
     value: { filepath: string } | null;
 }
 
-function defaultPathInputProps(): PathInputProps {
+function defaultPathInputProps(updateValue: (id: string) => UpdateValueFunc): PathInputProps {
+    const id = uniqid()
+    // TODO: add proper updateValue
     return {
-        id: uniqid(),
+        id: id,
         type: "path",
         value: null,
+        updateValue: (value) => { },
     }
 }
 
+// TODO: properly implement behaviour on 
 export const PathInput: React.FC<PathInputProps> = (props: PathInputProps) => {
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         props.value.filepath = event.target.value
@@ -195,6 +219,7 @@ export const PathInput: React.FC<PathInputProps> = (props: PathInputProps) => {
     }
 
     const onFileChange = (event) => {
+        // TODO: Add logic for opening model selection screen
         console.log(event.target.files)
     }
 
@@ -204,7 +229,8 @@ export const PathInput: React.FC<PathInputProps> = (props: PathInputProps) => {
                 style={{ flexBasis: "auto" }}
                 value={props.value == null ? "" : props.value.filepath}
                 onChange={handleChange}
-                type="text" />
+                type="text"
+                readOnly />
             <input type='file'
                 id='file'
                 ref={inputFile}
@@ -224,24 +250,22 @@ export interface StringInputProps extends InputElementProps {
     value: string;
 }
 
-function defaultStringInputProps(): StringInputProps {
+function defaultStringInputProps(updateValue: (id: string) => UpdateValueFunc): StringInputProps {
+    const id = uniqid()
     return {
-        id: uniqid(),
+        id: id,
         type: "string",
         value: "",
+        updateValue: updateValue(id)
     }
 }
 
 export const StringInput: React.FC<StringInputProps> = (props: StringInputProps) => {
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        props.value = event.target.value
-    }
-
     return (
         <InputElement {...props}>
-            <input className="input has-text-right"
-                value={props.value}
-                onChange={handleChange}
+            <SyncedInput className="input has-text-right"
+                outerValue={props.value}
+                updateValue={props.updateValue}
                 type="text" />
         </InputElement>
     )
@@ -249,6 +273,7 @@ export const StringInput: React.FC<StringInputProps> = (props: StringInputProps)
 
 export interface SyncedInputProps<T> {
     className?: string
+    style?: React.CSSProperties
     type: string
 
     outerValue: T
@@ -258,23 +283,20 @@ export interface SyncedInputProps<T> {
 type InputValues =
     | string
     | number
-    | readonly string[]
 
 const SyncedInput = <T extends InputValues,>(props: SyncedInputProps<T>) => {
     const [submitTimerID, setSubmitTimerID] = React.useState<(NodeJS.Timeout | null)>(null)
     const [currValue, setCurrentValue] = React.useState(props.outerValue)
 
     const submitValue = (innerValue: T) => {
-        // Ignore the new comment if it is the same as the last set value.
-        if (innerValue == props.outerValue) return;
-
         props.updateValue(innerValue)
         setSubmitTimerID(null)
     }
 
     const scheduleSubmitValue = (newValue: T) => {
         if (submitTimerID != null) clearTimeout(submitTimerID)
-        setTimeout(() => submitValue(newValue))
+        const id = setTimeout(() => submitValue(newValue), wait_interval)
+        setSubmitTimerID(id)
     }
 
 
@@ -295,7 +317,8 @@ const SyncedInput = <T extends InputValues,>(props: SyncedInputProps<T>) => {
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             type={props.type}
-            className={props.className} />
+            className={props.className}
+            style={props.style} />
     )
 }
 
@@ -329,22 +352,23 @@ export const Control: React.FC<ControlProps> = ({ children }: ControlProps) => {
 export interface ArrayInputProps {
     type: "array"
     elemType: ValueType
-    elems: InputBaseProps[]
+    elems: BaseSupportedType[]
     enumValues?: string[]
+    updateValue: (value: BaseSupportedType[]) => void
 }
 
-function createDefault(type: ValueType, enumValues?: string[]): InputBaseProps {
+function createDefault(type: ValueType, updateValue: (id: string) => UpdateValueFunc, enumValues?: string[]): InputBaseProps {
     switch (type) {
         case "number":
-            return defaultNumberInputProps();
+            return defaultNumberInputProps(updateValue);
         case "enum":
-            return defaultEnumInputProps(enumValues);
+            return defaultEnumInputProps(enumValues, updateValue);
         case "boolean":
-            return defaultBooleanInputProps();
+            return defaultBooleanInputProps(updateValue);
         case "path":
-            return defaultPathInputProps();
+            return defaultPathInputProps(updateValue);
         case "string":
-            return defaultStringInputProps();
+            return defaultStringInputProps(updateValue);
     }
 }
 
@@ -365,15 +389,44 @@ function reorder<T>(list: T[], startIndex: number, endIndex: number): T[] {
 };
 
 export const ArrayInput: React.FC<ArrayInputProps> = (props: ArrayInputProps) => {
-    const [elems, setElems] = React.useState(props.elems);
+    const createElem = (value: BaseSupportedType) => createDefault(props.elemType, updateValueElem, props.enumValues)
+
+    const [elems, setElems] = React.useState<InputBaseProps[]>(props.elems.map(createElem))
     const [isDragging, setIsDragging] = React.useState(false);
 
     const [resizeListener, sizes] = useResizeAware();
 
+    function updateIndividualElement(inputProps: InputBaseProps, id: string, value: BaseSupportedType) {
+        if (inputProps.id !== id) return inputProps;
+
+        const newInputProps = { ...inputProps }
+        newInputProps.value = value
+        return newInputProps
+    }
+
+    function getNewElems(id: string, value: BaseSupportedType): InputBaseProps[] {
+        return elems.map(v => updateIndividualElement(v, id, value))
+    }
+
+    function submitNewValue(newElems: InputBaseProps[]): void {
+        const newValue: BaseSupportedType[] = newElems.map(v => v.value)
+        props.updateValue(newValue)
+    }
+
+    // TODO: update type definitions to only support BaseSupportedType?
+    const updateValueElem: (id: string) => UpdateValueFunc = (id: string) => ((value: BaseSupportedType) => {
+        const newElems = getNewElems(id, value)
+        setElems(newElems)
+        submitNewValue(newElems)
+    })
+
     const handleClick = () => {
-        const newElement = createDefault(props.elemType, props.enumValues)
+        const newElement = createDefault(props.elemType, updateValueElem, props.enumValues)
         newElement.shouldAnimate = true
-        setElems([...elems, newElement]);
+
+        const newElements = [...elems, newElement]
+        setElems(newElements);
+        submitNewValue(newElements)
     }
 
     const { height } = useSpring({
@@ -467,15 +520,15 @@ export type InputProps =
     | InputBaseProps
     | InputCompositeProps
 
-export type SupportedType =
+export type BaseSupportedType =
     | number
     | boolean
     | string
     | ({ filepath: string } | null)
-    | number[]
-    | boolean[]
-    | string[]
-    | ({ filepath: string } | null)[]
+
+export type SupportedType =
+    | BaseSupportedType
+    | BaseSupportedType[]
 
 const PropertyInputInner: React.FC<InputProps> = (props: InputProps) => {
     switch (props.type) {

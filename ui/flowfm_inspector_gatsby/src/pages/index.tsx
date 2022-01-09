@@ -33,7 +33,7 @@ function api<T>(url: string): Promise<T> {
     })
 }
 
-function put<TIn, TOut>(url: string, data: TIn): Promise<TOut> {
+function put<TIn>(url: string, data: TIn): Promise<void> {
     return fetch(url, {
         method: "PUT",
         headers: {
@@ -42,7 +42,6 @@ function put<TIn, TOut>(url: string, data: TIn): Promise<TOut> {
         body: JSON.stringify(data)
     }).then(response => {
         if (!response.ok) throw new Error(response.statusText)
-        else return response.json() as Promise<TOut>
     })
 }
 
@@ -82,16 +81,8 @@ interface ValuePutRequest {
     valuetype: ValueType
 }
 
-interface ValuePutResult {
-    result: SupportedType
-}
-
 interface CommentPutRequest {
     value: string
-}
-
-interface CommentPutResult {
-    result: string
 }
 
 const IndexPage: React.FC<PageProps> = () => {
@@ -126,31 +117,13 @@ const IndexPage: React.FC<PageProps> = () => {
     const activeTables = tables.filter(tableName => !(modelData[tableName] == null || schemaData[tableName] == null))
 
     function updateComment(modelName: string, fieldName: string, value: string): void {
-        const setCommentPath = `${models_url}/${modelID}/comments?submodel=${modelName}&field=${fieldName}`
-        put<CommentPutRequest, CommentPutResult>(setCommentPath, { value: value })
-            .then(v => {
-                const newState = adjustPropertyCommentInModel(
-                    modelData,
-                    modelName,
-                    fieldName,
-                    v.result
-                );
-                setModelData(newState);
-            })
+        const setCommentPath = `${models_url}/${modelID}/comments?submodel=${modelName}&field=${fieldName.toLowerCase()}`
+        put<CommentPutRequest>(setCommentPath, { value: value })
     }
 
     function updateValue(modelName: string, fieldName: string, value: SupportedType, valueType: ValueType): void {
-        const setValuePath = `${models_url}/${modelID}/values?submodel=${modelName}&field=${fieldName}`
-        put<ValuePutRequest, ValuePutResult>(setValuePath, { value: value, valuetype: valueType })
-            .then(v => {
-                const newState = adjustPropertyValueInModel(
-                    modelData,
-                    modelName,
-                    fieldName,
-                    v.result
-                );
-                setModelData(newState);
-            })
+        const setValuePath = `${models_url}/${modelID}/values?submodel=${modelName}&field=${fieldName.toLowerCase()}`
+        put<ValuePutRequest>(setValuePath, { value: value, valuetype: valueType })
     }
 
     return (
@@ -167,6 +140,7 @@ const IndexPage: React.FC<PageProps> = () => {
                                 <InputTable
                                     model={modelData[tableName]}
                                     schema={schemaData[tableName]}
+                                    updateValue={updateValue}
                                     updateComment={updateComment} />
                             </CollapsiblePanel>
                         )
