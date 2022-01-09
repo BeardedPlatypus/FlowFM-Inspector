@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FlowFM-Inspector", "FlowFM-Inspector\FlowFM-Inspector.fsproj", "{18EA7A9F-B2C1-45CE-A3E5-A3A2A34FF4CD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{18EA7A9F-B2C1-45CE-A3E5-A3A2A34FF4CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18EA7A9F-B2C1-45CE-A3E5-A3A2A34FF4CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18EA7A9F-B2C1-45CE-A3E5-A3A2A34FF4CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18EA7A9F-B2C1-45CE-A3E5-A3A2A34FF4CD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {841D6A71-1431-4F88-BA2E-E9B038C2F0A8}
+	EndGlobalSection
+EndGlobal
