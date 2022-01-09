@@ -6,6 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="13"
@@ -58,5 +59,9 @@
         </mah:WindowCommands>
     </mah:MetroWindow.RightWindowCommands>
 
+    <DockPanel>
+        <wv2:WebView2 Name="WebView" />
+                      <!-- Source="https://www.microsoft.com"/> -->
+    </DockPanel>
 
 </mah:MetroWindow>
