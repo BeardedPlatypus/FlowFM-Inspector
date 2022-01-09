@@ -2,9 +2,9 @@
 
 namespace FlowFM_Inspector.Presentation.Views
 {
-    public partial class MainWindow : MetroWindow
+    public partial class MainView : MetroWindow
     {
-        public MainWindow()
+        public MainView()
         {
             InitializeComponent();
         }
