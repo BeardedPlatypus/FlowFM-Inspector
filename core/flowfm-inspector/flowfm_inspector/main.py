@@ -132,7 +132,11 @@ async def request_model_keys():
 @app.get("/api/models/{id}")
 async def request_specific_model(id: UUID4):
     # TODO: make this more generic with a separate function
-    return model_mapping[id].dict(by_alias=True)
+    data = model_mapping[id].dict(
+        by_alias=True, exclude_defaults=False, exclude_none=False, exclude_unset=False
+    )
+
+    return data
 
 
 SubmodelName = Literal[
@@ -212,7 +216,7 @@ class SetFieldCommentBody(BaseModel):
     value: str
 
 
-@app.put("/api/models/{id}/comments")
+@app.put("/api/models/{id}/comments", status_code=204)
 async def set_model_field_comment(
     id: UUID4, submodel: SubmodelName, field: str, body: SetFieldCommentBody
 ):
@@ -220,10 +224,9 @@ async def set_model_field_comment(
     submodel_ = getattr(model, submodel)
 
     setattr(submodel_.comments, field, body.value)
-    return {"result": body.value}
 
 
-@app.put("/api/models/{id}/values")
+@app.put("/api/models/{id}/values", status_code=204)
 async def set_model_field_value(
     id: UUID4, submodel: SubmodelName, field: str, body: SetFieldValueBody
 ):
@@ -233,7 +236,5 @@ async def set_model_field_value(
     if body.valuetype == ValueType.path:
         subsubmodel = getattr(submodel_, field)
         setattr(subsubmodel, "filepath", body.value.filepath)
-        return {"result": {"filepath": body.value.filepath}}
     else:
         setattr(submodel_, field, body.value)
-        return {"result": body.value}
