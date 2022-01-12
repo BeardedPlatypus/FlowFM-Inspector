@@ -5,7 +5,7 @@ import LoadingOverlay from "../components/loading/loading-overlay"
 
 const LoadingPage: React.FC<PageProps> = () => (
     <div>
-        <LoadingOverlay />
+        <LoadingOverlay fadeIn />
         <h1 className="title is-1">
             Test
         </h1>
