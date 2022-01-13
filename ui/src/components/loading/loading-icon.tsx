@@ -16,7 +16,6 @@ const LoadingIcon: React.FC<LoadingIconProps> = (props: LoadingIconProps) => {
     const delayOffset = props.delay != null ? props.delay : 0
 
     const { x } = useSpring({
-        reset: true,
         from: { x: 0 },
         x: 1,
         delay: 300 + delayOffset,
@@ -24,7 +23,6 @@ const LoadingIcon: React.FC<LoadingIconProps> = (props: LoadingIconProps) => {
     })
 
     const { opacityOuter } = useSpring({
-        reset: true,
         from: { opacityOuter: 0 },
         opacityOuter: 1,
         delay: 1450 + delayOffset,
@@ -32,7 +30,6 @@ const LoadingIcon: React.FC<LoadingIconProps> = (props: LoadingIconProps) => {
     })
 
     const { opacityInner } = useSpring({
-        reset: true,
         from: { opacityInner: 0 },
         opacityInner: 1,
         delay: 1410 + delayOffset,
@@ -40,7 +37,6 @@ const LoadingIcon: React.FC<LoadingIconProps> = (props: LoadingIconProps) => {
     })
 
     const { opacityFace } = useSpring({
-        reset: true,
         from: { opacityFace: 0 },
         opacityFace: 1,
         delay: 1650 + delayOffset,
@@ -48,7 +44,6 @@ const LoadingIcon: React.FC<LoadingIconProps> = (props: LoadingIconProps) => {
     })
 
     const { opacityTitle } = useSpring({
-        reset: true,
         from: { opacityTitle: 0 },
         opacityTitle: 1,
         delay: 1800 + delayOffset,
