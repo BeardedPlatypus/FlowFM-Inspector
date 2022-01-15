@@ -10,6 +10,7 @@ pydantic = "^1.8.2"
 fastapi = {extras = ["all"], version = "^0.70.1"}
 hydrolib-core = "^0.2.0"
 strawberry-graphql = {extras = ["fastapi"], version = "^0.93.10"}
+platformdirs = "^2.4.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
