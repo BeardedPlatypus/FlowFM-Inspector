@@ -26,12 +26,16 @@ from pydantic.types import UUID4
 
 from basemodel import BaseModel
 
+import flowfm_inspector.state
+from flowfm_inspector.routers import appdata
+
 
 # The network is currently problematic and we do not want to load it.
 NetworkModel.__fields__.pop("network", None)
 
 app = FastAPI()
 
+app.include_router(appdata.router)
 
 # origins = ["http://localhost:8002", "localhost:8002"]
 origins = ["*"]
