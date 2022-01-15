@@ -80,6 +80,7 @@ class AppData(BaseModel):
 
     def write(self) -> None:
         """Write this AppData to the appdata location."""
+        self._appdata_path.parent.mkdir(parents=True, exist_ok=True)
         with self._appdata_path.open("w") as f:
             json.dump(self.dict(), f)
 
@@ -94,7 +95,7 @@ class AppData(BaseModel):
         """
         try:
             return cls._load_from_disk()
-        except OSError:
+        except FileNotFoundError:
             # Could not read the file because it did not exist or was corrupted.
             return cls._create_new()
 
