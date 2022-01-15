@@ -1,8 +1,8 @@
 from enum import Enum
 from pathlib import Path
-from typing import Dict, Iterable, List, Literal, Type, Union
+from typing import Dict, List, Literal, Type, Union
 from uuid import uuid4
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from hydrolib.core.basemodel import FileModel
 from hydrolib.core.io.mdu.models import (
@@ -22,8 +22,9 @@ from hydrolib.core.io.mdu.models import (
     Waves,
 )
 from hydrolib.core.io.net.models import NetworkModel
-from pydantic import BaseModel as PydanticBaseModel
 from pydantic.types import UUID4
+
+from basemodel import BaseModel
 
 
 # The network is currently problematic and we do not want to load it.
@@ -65,10 +66,6 @@ mdu_models = [
 schema_mapping: Dict[str, Dict[str, Type]] = {
     "mdu": {m.__name__.lower(): m for m in mdu_models}
 }
-
-
-class BaseModel(PydanticBaseModel):
-    pass
 
 
 initial_uuid = uuid4()
