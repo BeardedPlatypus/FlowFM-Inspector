@@ -1,4 +1,6 @@
 import * as React from "react"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFile } from "@fortawesome/free-solid-svg-icons";
 import { PageProps } from "gatsby"
 import Footer from "../components/footer"
 
@@ -11,7 +13,7 @@ const Icon: React.FC = () => {
     const iconMouth = "m 90.052808,167.29562 c 2.16026,3.04052 8.221,2.94113 8.221,2.94113 0,0 6.060752,0.0994 8.221002,-2.94113"
 
     return (
-        <svg style={{ height: "100px" }} viewBox="0 0 139.09511 181.77489">
+        <svg viewBox="0 0 139.09511 181.77489" style={{ width: "40%", maxHeight: "10%" }}>
             <g transform="translate(-28.726254,-71.642315)">
                 <path d={iconPointsOuter}
                     transform="matrix(0.26458333,0,0,0.26458333,28.726254,71.642315)"
@@ -49,36 +51,59 @@ const Icon: React.FC = () => {
             </g>
         </svg>
     )
-
 }
-
 
 const StartUp: React.FC<PageProps> = () => {
     return (
-        <div>
-            <section className="section">
-                <div className="container">
+        <div style={{ height: "100vh", width: "100vw" }}>
+            <section className="section" style={{ height: "100%" }}>
+                <div className="columns is-flex is-align-content-stretch" style={{ height: "100%" }}>
+                    <div className="column is-three-quarters" style={{ height: "100%" }}>
+                        <div className="box" style={{ height: "100%" }}>
+                            <h1 className="title is-4">Open recent</h1>
 
-                    <div className="box">
-                        <div className="columns is-variable is-4 is-flex is-vcentered">
-                            <div className="column is-narrow">
-                                <Icon />
+                            <div className="is-flex is-flex-direction-row is-fullwidth my-4">
+                                <div className="is-flex-shrink-1 m-1 has-text-grey" style={{ width: "2rem" }}>
+                                    <span className="fa-layers fa-fw fa-2x" style={{ width: "100%", height: "100%" }}>
+                                        <FontAwesomeIcon icon={faFile} />
+                                        <span className="fa-layers-text has-text-white" style={{ fontWeight: 900, transform: "scale(0.26)", transformOrigin: "-17% 0%" }}>mdu</span>
+                                    </span>
+                                </div>
+                                <div className="is-flex-direction-column is-flex-grow-1 pl-3">
+                                    <h6 className="title is-6">FlowFM.mdu</h6>
+                                    <h6 className="subtitle is-6">D:/test/path</h6>
+                                </div>
+                                <div className="is-flex-shrink-1">
+                                    <h6 className="subtitle is-6">5-1-2021 20:39</h6>
+                                </div>
                             </div>
-                            <div className="column">
-                                <h1 className="title is-1">FlowFM Inspector</h1>
+
+                            <div className="is-flex is-flex-direction-row is-fullwidth my-4">
+                                <div className="is-flex-shrink-1 m-1 has-text-grey" style={{ width: "2rem" }}>
+                                    <span className="fa-layers fa-fw fa-2x" style={{ width: "100%", height: "100%" }}>
+                                        <FontAwesomeIcon icon={faFile} />
+                                        <span className="fa-layers-text has-text-white" style={{ fontWeight: 900, transform: "scale(0.26)", transformOrigin: "-17% 0%" }}>dimr</span>
+                                    </span>
+                                </div>
+                                <div className="is-flex-direction-column is-flex-grow-1 pl-3">
+                                    <h6 className="title is-6">dimr.xml</h6>
+                                    <h6 className="subtitle is-6">D:/test/path</h6>
+                                </div>
+                                <div className="is-flex-shrink-1">
+                                    <h6 className="subtitle is-6">5-1-2021 20:12</h6>
+                                </div>
                             </div>
+
                         </div>
                     </div>
-                    <div className="columns">
-                        <div className="column is-two-thirds">
-                            <div className="box">
-                                <h1 className="title is-3">Open recent</h1>
+                    <div className="column" style={{ height: "100%" }}>
+                        <div className="box" style={{ height: "100%" }}>
+                            <div className="is-fullwidth is-flex is-justify-content-center p-4">
+                                <Icon />
                             </div>
-                        </div>
-                        <div className="column">
-                            <div className="box">
-                                <h1 className="title is-3">Get started</h1>
-                            </div>
+                            <button className="button  is-info is-fullwidth mt-2 mb-1">New Project</button>
+                            <button className="button  is-info is-fullwidth mb-1">Load Project</button>
+                            <button className="button  is-info is-fullwidth mb-1">Open Model</button>
                         </div>
                     </div>
                 </div>
