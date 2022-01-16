@@ -136,6 +136,10 @@ class AppDataManager:
             self._description.config_path, self._content
         )
 
+    @property
+    def content(self) -> AppDataContent:
+        return self._content
+
     @staticmethod
     def _load_content_from_disk(path: Path) -> AppDataContent:
         return AppDataContent.parse_file(path)

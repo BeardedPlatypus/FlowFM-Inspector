@@ -9,7 +9,7 @@ router = APIRouter(prefix="/api/appdata", tags=["appdata"])
 
 @router.get("/recent-projects", tags=["appdata"])
 async def retrieve_recent_projects():
-    return appdata.recent_projects.dict()
+    return appdata.content.recent_projects.dict()
 
 
 class RecentProjectPutBody(BaseModel):
