@@ -62,37 +62,59 @@ const StartUp: React.FC<PageProps> = () => {
                         <div className="box" style={{ height: "100%" }}>
                             <h1 className="title is-4">Open recent</h1>
 
-                            <div className="is-flex is-flex-direction-row is-fullwidth my-4">
-                                <div className="is-flex-shrink-1 m-1 has-text-grey" style={{ width: "2rem" }}>
-                                    <span className="fa-layers fa-fw fa-2x" style={{ width: "100%", height: "100%" }}>
-                                        <FontAwesomeIcon icon={faFile} />
-                                        <span className="fa-layers-text has-text-white" style={{ fontWeight: 900, transform: "scale(0.26)", transformOrigin: "-17% 0%" }}>mdu</span>
-                                    </span>
+                            <button className="button is-white is-fullwidth is-justify-content-space-around" style={{ height: "5rem" }}>
+                                <div className="is-flex is-flex-direction-row is-fullwidth my-8 is-flex-grow-1">
+                                    <div className="is-flex-shrink-1 m-1 has-text-grey-light" style={{ width: "2rem" }}>
+                                        <span className="fa-layers fa-fw fa-2x" style={{ width: "100%", height: "100%" }}>
+                                            <FontAwesomeIcon icon={faFile} />
+                                            <span className="fa-layers-text has-text-white" style={{ fontWeight: 900, transform: "scale(0.26)", transformOrigin: "-17% 0%" }}>mdu</span>
+                                        </span>
+                                    </div>
+                                    <div className="is-flex-direction-column is-flex-grow-1 pl-3 has-text-left">
+                                        <h6 className="title is-6">FlowFM.mdu</h6>
+                                        <h6 className="subtitle is-6">D:/test/path</h6>
+                                    </div>
+                                    <div className="is-flex-shrink-1">
+                                        <h6 className="subtitle is-6">5-1-2021 20:39</h6>
+                                    </div>
                                 </div>
-                                <div className="is-flex-direction-column is-flex-grow-1 pl-3">
-                                    <h6 className="title is-6">FlowFM.mdu</h6>
-                                    <h6 className="subtitle is-6">D:/test/path</h6>
-                                </div>
-                                <div className="is-flex-shrink-1">
-                                    <h6 className="subtitle is-6">5-1-2021 20:39</h6>
-                                </div>
-                            </div>
+                            </button>
 
-                            <div className="is-flex is-flex-direction-row is-fullwidth my-4">
-                                <div className="is-flex-shrink-1 m-1 has-text-grey" style={{ width: "2rem" }}>
-                                    <span className="fa-layers fa-fw fa-2x" style={{ width: "100%", height: "100%" }}>
-                                        <FontAwesomeIcon icon={faFile} />
-                                        <span className="fa-layers-text has-text-white" style={{ fontWeight: 900, transform: "scale(0.26)", transformOrigin: "-17% 0%" }}>dimr</span>
-                                    </span>
+                            <button className="button is-white is-fullwidth is-justify-content-space-around" style={{ height: "5rem" }}>
+                                <div className="is-flex is-flex-direction-row is-fullwidth my-8 is-flex-grow-1">
+                                    <div className="is-flex-shrink-1 m-1 has-text-grey-light" style={{ width: "2rem" }}>
+                                        <span className="fa-layers fa-fw fa-2x" style={{ width: "100%", height: "100%" }}>
+                                            <FontAwesomeIcon icon={faFile} />
+                                            <span className="fa-layers-text has-text-white" style={{ fontWeight: 900, transform: "scale(0.26)", transformOrigin: "-17% 0%" }}>proj</span>
+                                        </span>
+                                    </div>
+                                    <div className="is-flex-direction-column is-flex-grow-1 pl-3 has-text-left">
+                                        <h6 className="title is-6">FlowFM.inspect.json</h6>
+                                        <h6 className="subtitle is-6">D:/test/path</h6>
+                                    </div>
+                                    <div className="is-flex-shrink-1">
+                                        <h6 className="subtitle is-6">5-1-2021 08:23</h6>
+                                    </div>
                                 </div>
-                                <div className="is-flex-direction-column is-flex-grow-1 pl-3">
-                                    <h6 className="title is-6">dimr.xml</h6>
-                                    <h6 className="subtitle is-6">D:/test/path</h6>
+                            </button>
+
+                            <button className="button is-white is-fullwidth is-justify-content-space-around" style={{ height: "5rem" }}>
+                                <div className="is-flex is-flex-direction-row is-fullwidth my-8 is-flex-grow-1">
+                                    <div className="is-flex-shrink-1 m-1 has-text-grey-light" style={{ width: "2rem" }}>
+                                        <span className="fa-layers fa-fw fa-2x" style={{ width: "100%", height: "100%" }}>
+                                            <FontAwesomeIcon icon={faFile} />
+                                            <span className="fa-layers-text has-text-white" style={{ fontWeight: 900, transform: "scale(0.26)", transformOrigin: "-17% 0%" }}>dimr</span>
+                                        </span>
+                                    </div>
+                                    <div className="is-flex-direction-column is-flex-grow-1 pl-3 has-text-left">
+                                        <h6 className="title is-6">dimr.xml</h6>
+                                        <h6 className="subtitle is-6">D:/test/path</h6>
+                                    </div>
+                                    <div className="is-flex-shrink-1">
+                                        <h6 className="subtitle is-6">4-1-2021 18:21</h6>
+                                    </div>
                                 </div>
-                                <div className="is-flex-shrink-1">
-                                    <h6 className="subtitle is-6">5-1-2021 20:12</h6>
-                                </div>
-                            </div>
+                            </button>
 
                         </div>
                     </div>
