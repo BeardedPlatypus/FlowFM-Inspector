@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from platformdirs import user_data_dir
 from pydantic import validator
-from typing import List, Literal
+from typing import List, Protocol
 
 from flowfm_inspector.basemodel import BaseModel
 
@@ -64,52 +64,91 @@ class RecentProjectData(BaseModel):
         self.recent_projects = updated_projects
 
 
-class AppData(BaseModel):
-    """The AppData describes the data stored in the app data folder of the FlowFM inspector.
+class AppDataFileDescriptionProtocol(Protocol):
+    """AppDataFileDescriptionProtocol describes the path
+    to the config file of this application.
+    """
+
+    @property
+    def config_path(self) -> Path:
+        """Gets the Path to the config file to be read.
+
+        Returns:
+            Path: The Path to the config file.
+        """
+
+
+class AppDataFileDescription(BaseModel):
+    """AppDataFileDescription implements the AppDataFileDescriptionProtocol
+    with the help of platformdirs.
 
     Properties:
-        recent_projects (List[RecentProject]): The recently opened projects.
+        name (str): The name of the application.
+        author (str): The author of the application.
+    """
+
+    name: str
+    author: str
+
+    @property
+    def config_path(self) -> Path:
+        return Path(user_data_dir(self.name, self.author)) / "config.json"
+
+
+class AppDataContent(BaseModel):
+    """AppDataContent describes the data stored in the AppDataFile
+
+    Args:
+        BaseModel ([type]): [description]
     """
 
     recent_projects: RecentProjectData = RecentProjectData()
 
-    _appname: Literal["FlowFM-Inspector"] = "FlowFM-Inspector"
-    _app_author: Literal["BeardedPlatypus"] = "BeardedPlatypus"
 
-    _appdata_path: Path = Path(user_data_dir(_appname, _app_author)) / "config.json"
+class AppDataManager:
+    """The AppDataManager contains a AppDataFileDescriptionProtocol
+    and some content. It is responsible for reading and writing said
+    content to file.
+    """
 
-    def write(self) -> None:
-        """Write this AppData to the appdata location."""
-        self._appdata_path.parent.mkdir(parents=True, exist_ok=True)
-        with self._appdata_path.open("w") as f:
-            json.dump(self.json(), f)
+    def __init__(self, appdata_description: AppDataFileDescriptionProtocol) -> None:
+        self._description: AppDataFileDescriptionProtocol = appdata_description
+        self._content: AppDataContent = self._init_content()
 
-    @classmethod
-    def read(cls) -> "AppData":
-        """Read the AppData and return a new AppData instance.
+    def _init_content(self) -> AppDataContent:
+        """Create a new AppDataContent.
 
-        If no AppData file has been created before, it will be created.
+        If no AppData file has been created before, it will be created. Otherwise
+        it will be read from disk.
 
         Returns:
             AppData: The read AppData object.
         """
         try:
-            return cls._load_from_disk()
+            return AppDataManager._load_content_from_disk(self._description.config_path)
         except FileNotFoundError:
             # Could not read the file because it did not exist or was corrupted.
-            return cls._create_new()
+            return AppDataManager._create_new_content()
 
-    @classmethod
-    def _load_from_disk(cls) -> "AppData":
-        with cls._appdata_path.open("r") as f:
-            json_data = json.load(f)
-            return cls.parse_obj(json_data)
+    def _write(self) -> None:
+        """Write this AppDataContent to the appdata location."""
+        AppDataManager._write_content_to_disk(
+            self._description.config_path, self._content
+        )
 
-    @classmethod
-    def _create_new(cls) -> "AppData":
-        data = AppData()
-        data.write()
-        return data
+    @staticmethod
+    def _load_content_from_disk(path: Path) -> AppDataContent:
+        return AppDataContent.parse_file(path)
+
+    @staticmethod
+    def _create_new_content() -> AppDataContent:
+        return AppDataContent()
+
+    @staticmethod
+    def _write_content_to_disk(path: Path, content: AppDataContent) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("w") as f:
+            f.write(content.json())
 
     def update_recent_project(self, recent_project: Path) -> None:
         """Update the recent project associated with the specified recent_project.
@@ -119,5 +158,5 @@ class AppData(BaseModel):
         Args:
             recent_project (Path): The path to the project to update.
         """
-        self.recent_projects.update_project(recent_project)
-        self.write()
+        self._content.recent_projects.update_project(recent_project)
+        self._write()
