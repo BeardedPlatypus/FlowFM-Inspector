@@ -82,7 +82,7 @@ class AppData(BaseModel):
         """Write this AppData to the appdata location."""
         self._appdata_path.parent.mkdir(parents=True, exist_ok=True)
         with self._appdata_path.open("w") as f:
-            json.dump(self.dict(), f)
+            json.dump(self.json(), f)
 
     @classmethod
     def read(cls) -> "AppData":
