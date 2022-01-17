@@ -53,6 +53,67 @@ const Icon: React.FC = () => {
     )
 }
 
+interface RecentProjectProps {
+    path: string
+    last_opened: Date
+}
+
+interface PathDetails {
+    extension: string
+    fileName: string
+    parentDir: string
+}
+
+
+function InterpretPath(path: string): PathDetails {
+    const pathParts = path.replace("\\", "/").split("/")
+    const fileName = pathParts[pathParts.length - 1]
+    const directory = pathParts.slice(0, -1).join("/")
+    const fileNameParts = fileName.split(".")
+    const extension = fileNameParts[fileNameParts.length - 1]
+
+    return {
+        extension: extension,
+        fileName: fileName,
+        parentDir: directory,
+    }
+}
+
+const RecentProject: React.FC<RecentProjectProps> = (props: RecentProjectProps) => {
+    const prefixedStr = (val: number) => `${val < 10 ? "0" : ""}${val}`
+
+    const day = props.last_opened.getDate()
+    const month = props.last_opened.getMonth() + 1
+    const year = props.last_opened.getFullYear()
+    const hour = props.last_opened.getHours()
+    const mins = props.last_opened.getMinutes()
+
+    const dateStr = `${prefixedStr(day)}-${prefixedStr(month)}-${year} ${prefixedStr(hour)}:${prefixedStr(mins)}`
+    const { extension, fileName, parentDir } = InterpretPath(props.path)
+
+    return (
+        <button className="button is-white is-fullwidth is-justify-content-space-around" style={{ height: "5rem" }}>
+            <div className="is-flex is-flex-direction-row is-fullwidth my-8 is-flex-grow-1">
+                <div className="is-flex-shrink-1 m-1 has-text-grey-light" style={{ width: "2rem" }}>
+                    <span className="fa-layers fa-fw fa-2x" style={{ width: "100%", height: "100%" }}>
+                        <FontAwesomeIcon icon={faFile} />
+                        <span className="fa-layers-text has-text-white" style={{ fontWeight: 900, transform: "scale(0.26)", transformOrigin: "-17% 0%" }}>
+                            {extension === "xml" ? "dimr" : extension}
+                        </span>
+                    </span>
+                </div>
+                <div className="is-flex-direction-column is-flex-grow-1 pl-3 has-text-left">
+                    <h6 className="title is-6">{fileName}</h6>
+                    <h6 className="subtitle is-6">{parentDir}</h6>
+                </div>
+                <div className="is-flex-shrink-1">
+                    <h6 className="subtitle is-6">{dateStr}</h6>
+                </div>
+            </div>
+        </button>
+    )
+}
+
 const StartUp: React.FC<PageProps> = () => {
     return (
         <div style={{ height: "100vh", width: "100vw" }}>
@@ -62,60 +123,15 @@ const StartUp: React.FC<PageProps> = () => {
                         <div className="box" style={{ height: "100%" }}>
                             <h1 className="title is-4">Open recent</h1>
 
-                            <button className="button is-white is-fullwidth is-justify-content-space-around" style={{ height: "5rem" }}>
-                                <div className="is-flex is-flex-direction-row is-fullwidth my-8 is-flex-grow-1">
-                                    <div className="is-flex-shrink-1 m-1 has-text-grey-light" style={{ width: "2rem" }}>
-                                        <span className="fa-layers fa-fw fa-2x" style={{ width: "100%", height: "100%" }}>
-                                            <FontAwesomeIcon icon={faFile} />
-                                            <span className="fa-layers-text has-text-white" style={{ fontWeight: 900, transform: "scale(0.26)", transformOrigin: "-17% 0%" }}>mdu</span>
-                                        </span>
-                                    </div>
-                                    <div className="is-flex-direction-column is-flex-grow-1 pl-3 has-text-left">
-                                        <h6 className="title is-6">FlowFM.mdu</h6>
-                                        <h6 className="subtitle is-6">D:/test/path</h6>
-                                    </div>
-                                    <div className="is-flex-shrink-1">
-                                        <h6 className="subtitle is-6">5-1-2021 20:39</h6>
-                                    </div>
-                                </div>
-                            </button>
-
-                            <button className="button is-white is-fullwidth is-justify-content-space-around" style={{ height: "5rem" }}>
-                                <div className="is-flex is-flex-direction-row is-fullwidth my-8 is-flex-grow-1">
-                                    <div className="is-flex-shrink-1 m-1 has-text-grey-light" style={{ width: "2rem" }}>
-                                        <span className="fa-layers fa-fw fa-2x" style={{ width: "100%", height: "100%" }}>
-                                            <FontAwesomeIcon icon={faFile} />
-                                            <span className="fa-layers-text has-text-white" style={{ fontWeight: 900, transform: "scale(0.26)", transformOrigin: "-17% 0%" }}>proj</span>
-                                        </span>
-                                    </div>
-                                    <div className="is-flex-direction-column is-flex-grow-1 pl-3 has-text-left">
-                                        <h6 className="title is-6">FlowFM.inspect.json</h6>
-                                        <h6 className="subtitle is-6">D:/test/path</h6>
-                                    </div>
-                                    <div className="is-flex-shrink-1">
-                                        <h6 className="subtitle is-6">5-1-2021 08:23</h6>
-                                    </div>
-                                </div>
-                            </button>
-
-                            <button className="button is-white is-fullwidth is-justify-content-space-around" style={{ height: "5rem" }}>
-                                <div className="is-flex is-flex-direction-row is-fullwidth my-8 is-flex-grow-1">
-                                    <div className="is-flex-shrink-1 m-1 has-text-grey-light" style={{ width: "2rem" }}>
-                                        <span className="fa-layers fa-fw fa-2x" style={{ width: "100%", height: "100%" }}>
-                                            <FontAwesomeIcon icon={faFile} />
-                                            <span className="fa-layers-text has-text-white" style={{ fontWeight: 900, transform: "scale(0.26)", transformOrigin: "-17% 0%" }}>dimr</span>
-                                        </span>
-                                    </div>
-                                    <div className="is-flex-direction-column is-flex-grow-1 pl-3 has-text-left">
-                                        <h6 className="title is-6">dimr.xml</h6>
-                                        <h6 className="subtitle is-6">D:/test/path</h6>
-                                    </div>
-                                    <div className="is-flex-shrink-1">
-                                        <h6 className="subtitle is-6">4-1-2021 18:21</h6>
-                                    </div>
-                                </div>
-                            </button>
-
+                            <RecentProject
+                                path="D:/test/path/FlowFM.mdu"
+                                last_opened={new Date("2021-01-05T20:39:44")} />
+                            <RecentProject
+                                path="D:/test/path/FlowFM.inspect.json"
+                                last_opened={new Date("2021-01-05T08:23:44")} />
+                            <RecentProject
+                                path="D:/test/path/dimr.xml"
+                                last_opened={new Date("2021-01-04T18:21:44")} />
                         </div>
                     </div>
                     <div className="column" style={{ height: "100%" }}>
@@ -123,9 +139,9 @@ const StartUp: React.FC<PageProps> = () => {
                             <div className="is-fullwidth is-flex is-justify-content-center p-4">
                                 <Icon />
                             </div>
-                            <button className="button  is-info is-fullwidth mt-2 mb-1">New Project</button>
-                            <button className="button  is-info is-fullwidth mb-1">Load Project</button>
-                            <button className="button  is-info is-fullwidth mb-1">Open Model</button>
+                            <button className="button is-info is-light is-fullwidth mt-2 mb-1">New Project</button>
+                            <button className="button is-info is-light is-fullwidth mb-1">Load Project</button>
+                            <button className="button is-info is-light is-fullwidth mb-1">Open Model</button>
                         </div>
                     </div>
                 </div>
