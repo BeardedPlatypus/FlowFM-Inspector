@@ -2,6 +2,7 @@ import * as React from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
 import { PageProps } from "gatsby"
+import { useSpring, useTransition, animated, config } from "react-spring"
 import Footer from "../components/footer"
 
 
@@ -115,6 +116,20 @@ const RecentProject: React.FC<RecentProjectProps> = (props: RecentProjectProps) 
 }
 
 const StartUp: React.FC<PageProps> = () => {
+    const [recentProjectProps, setRecentProjectProps] = React.useState([
+        { path: "D:/test/path/FlowFM.mdu", last_opened: new Date("2021-01-05T20:39:44") },
+        { path: "D:/test/path/FlowFM.inspect.proj", last_opened: new Date("2021-01-05T08:14:44") },
+        { path: "D:/test/path/dimr.xml", last_opened: new Date("2021-01-04T20:15:44") }
+    ])
+
+    const transitions = useTransition(recentProjectProps, {
+        from: { opacity: 0 },
+        enter: { opacity: 1 },
+        leave: { opacity: 0 },
+        trail: 150,
+        config: config.slow,
+    })
+
     return (
         <div style={{ height: "100vh", width: "100vw" }}>
             <section className="section" style={{ height: "100%" }}>
@@ -123,15 +138,18 @@ const StartUp: React.FC<PageProps> = () => {
                         <div className="box" style={{ height: "100%" }}>
                             <h1 className="title is-4">Open recent</h1>
 
-                            <RecentProject
-                                path="D:/test/path/FlowFM.mdu"
-                                last_opened={new Date("2021-01-05T20:39:44")} />
-                            <RecentProject
-                                path="D:/test/path/FlowFM.inspect.json"
-                                last_opened={new Date("2021-01-05T08:23:44")} />
-                            <RecentProject
-                                path="D:/test/path/dimr.xml"
-                                last_opened={new Date("2021-01-04T18:21:44")} />
+                            <div>
+                                {transitions(({ opacity }, props) => (
+                                    <animated.div
+                                        style={{
+                                            opacity: opacity,
+                                            transform: opacity
+                                                .to(x => `translate3d(${200 * (1 - x)}px,0,0)`),
+                                        }}>
+                                        <RecentProject {...props} />
+                                    </animated.div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                     <div className="column" style={{ height: "100%" }}>
