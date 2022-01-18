@@ -115,12 +115,18 @@ const RecentProject: React.FC<RecentProjectProps> = (props: RecentProjectProps) 
     )
 }
 
-const StartUp: React.FC<PageProps> = () => {
+interface RecentProjectsProps {
+    opacity?: number
+}
+
+const RecentProjects: React.FC<RecentProjectsProps> = (props: RecentProjectsProps) => {
     const [recentProjectProps, setRecentProjectProps] = React.useState([
         { path: "D:/test/path/FlowFM.mdu", last_opened: new Date("2021-01-05T20:39:44") },
         { path: "D:/test/path/FlowFM.inspect.proj", last_opened: new Date("2021-01-05T08:14:44") },
         { path: "D:/test/path/dimr.xml", last_opened: new Date("2021-01-04T20:15:44") }
     ])
+
+    const opacityBox = props.opacity != null ? props.opacity : 1.0;
 
     const transitions = useTransition(recentProjectProps, {
         from: { opacity: 0 },
@@ -131,26 +137,32 @@ const StartUp: React.FC<PageProps> = () => {
     })
 
     return (
+        <div className="box" style={{ height: "100%", opacity: opacityBox }}>
+            <h1 className="title is-4">Open recent</h1>
+
+            <div style={{ overflow: "hidden" }}>
+                {transitions(({ opacity }, props) => (
+                    <animated.div
+                        style={{
+                            opacity: opacity,
+                            transform: opacity
+                                .to(x => `translate3d(${200 * (1 - x)}px,0,0)`),
+                        }}>
+                        <RecentProject {...props} />
+                    </animated.div>
+                ))}
+            </div>
+        </div>
+    )
+}
+
+const StartUp: React.FC<PageProps> = () => {
+    return (
         <div style={{ height: "100vh", width: "100vw" }}>
             <section className="section" style={{ height: "100%" }}>
                 <div className="columns is-flex is-align-content-stretch" style={{ height: "100%" }}>
                     <div className="column is-three-quarters" style={{ height: "100%" }}>
-                        <div className="box" style={{ height: "100%" }}>
-                            <h1 className="title is-4">Open recent</h1>
-
-                            <div>
-                                {transitions(({ opacity }, props) => (
-                                    <animated.div
-                                        style={{
-                                            opacity: opacity,
-                                            transform: opacity
-                                                .to(x => `translate3d(${200 * (1 - x)}px,0,0)`),
-                                        }}>
-                                        <RecentProject {...props} />
-                                    </animated.div>
-                                ))}
-                            </div>
-                        </div>
+                        <RecentProjects />
                     </div>
                     <div className="column" style={{ height: "100%" }}>
                         <div className="box" style={{ height: "100%" }}>
