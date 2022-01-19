@@ -119,12 +119,44 @@ interface RecentProjectsProps {
     opacity?: number
 }
 
+const RecentProjectsTestData = [
+    { path: "D:/test/path/FlowFM.mdu", last_opened: new Date("2021-01-05T20:39:44") },
+    { path: "D:/test/path/FlowFM.inspect.proj", last_opened: new Date("2021-01-05T08:14:44") },
+    { path: "D:/test/path/dimr.xml", last_opened: new Date("2021-01-04T20:15:44") }
+]
+
+function api<T>(url: string): Promise<T> {
+    return fetch(url).then(response => {
+        if (!response.ok) throw new Error(response.statusText)
+        else return response.json() as Promise<T>
+    })
+}
+
+const getRecentProjectsUrl = "http://localhost:8000/api/appdata/recent-projects"
+
+interface RecentProjectItemResponse {
+    project_path: string,
+    last_opened: string
+}
+
+function toRecentProject(item: RecentProjectItemResponse): RecentProjectProps {
+    return { path: item.project_path, last_opened: new Date(item.last_opened) }
+}
+
+interface GetRecentProjectsResponse {
+    recent_projects: RecentProjectItemResponse[]
+}
+
 const RecentProjects: React.FC<RecentProjectsProps> = (props: RecentProjectsProps) => {
-    const [recentProjectProps, setRecentProjectProps] = React.useState([
-        { path: "D:/test/path/FlowFM.mdu", last_opened: new Date("2021-01-05T20:39:44") },
-        { path: "D:/test/path/FlowFM.inspect.proj", last_opened: new Date("2021-01-05T08:14:44") },
-        { path: "D:/test/path/dimr.xml", last_opened: new Date("2021-01-04T20:15:44") }
-    ])
+    const [recentProjectProps, setRecentProjectProps] = React.useState([])
+
+    React.useEffect(() => {
+        api<GetRecentProjectsResponse>(getRecentProjectsUrl)
+            .then(response => {
+                const data = response.recent_projects.map(toRecentProject)
+                setRecentProjectProps(data)
+            })
+    }, [])
 
     const opacityBox = props.opacity != null ? props.opacity : 1.0;
 
