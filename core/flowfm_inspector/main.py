@@ -29,6 +29,9 @@ from basemodel import BaseModel
 import flowfm_inspector.state
 from flowfm_inspector.routers import appdata
 
+import uvicorn
+import typer
+
 
 # The network is currently problematic and we do not want to load it.
 NetworkModel.__fields__.pop("network", None)
@@ -240,3 +243,14 @@ async def set_model_field_value(
         setattr(subsubmodel, "filepath", body.value.filepath)
     else:
         setattr(submodel_, field, body.value)
+
+
+def main(port: int = typer.Argument(..., help="The port to run the backend server on.")):
+    """
+    Run the FlowFM-inspector backend server on the localhost:PORT.
+    """
+    uvicorn.run("main:app", host="0.0.0.0", port=port, log_level="info")
+
+
+if __name__ == "__main__":
+    typer.run(main)
