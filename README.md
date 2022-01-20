@@ -5,7 +5,7 @@
 The FlowFM Inspector is a small tool used to load, inspect, and modify
 [Delft3D Flexible Mesh Suite files][D-FlowFM]. It leverages the [HYDROLIB-core][HYDROLIB]
 for parsing and validation. It uses [React][React], [Gatsby.js][Gatsby], [Bulma][Bulma] 
-and [Electron][Electron] to render the user interface, and the [FastAPI][FastAPI] library
+and [Edge Webview 2][Webview2] to render the user interface, and the [FastAPI][FastAPI] library
 to expose the [HYDROLIB-core][HYDROLIB] library to the user interface.
 
 [D-FlowFM]: https://www.deltares.nl/en/software/delft3d-flexible-mesh-suite/
@@ -14,7 +14,7 @@ to expose the [HYDROLIB-core][HYDROLIB] library to the user interface.
 [React]: https://reactjs.org/ 
 [Gatsby]: https://www.gatsbyjs.com/
 [Bulma]: https://bulma.io/
-[Electron]: https://www.electronjs.org/
+[Webview2]: https://docs.microsoft.com/en-us/microsoft-edge/webview2/
 
 ## Motivation - Learning React, Typescript, Gatsby.js
 
