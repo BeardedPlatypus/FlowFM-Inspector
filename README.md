@@ -26,6 +26,8 @@ used as a reference.
 
 ## Installation
 
+## Features
+
 ## References
 
 ## Attribution
