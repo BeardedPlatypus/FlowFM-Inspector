@@ -1,9 +1,3 @@
-# Dockerfile to specify the devcontainer for HYDROLIB-Core.
-#   A guide how to utilise dev containers within HYDROLIB can be found here:
-#       https://deltares.github.io/HYDROLIB-core/guides/devcontainers/
-# 
-#   For more information about dev-containers in general, please refer to 
-#       https://aka.ms/vscode-docker-python
 FROM python:3.9-buster as python-base
 
 ENV PYTHONUNBUFFERED=1 \
