@@ -24,7 +24,7 @@ from hydrolib.core.io.mdu.models import (
 from hydrolib.core.io.net.models import NetworkModel
 from pydantic.types import UUID4
 
-from basemodel import BaseModel
+from flowfm_inspector.basemodel import BaseModel
 
 import flowfm_inspector.state
 from flowfm_inspector.routers import appdata
@@ -245,11 +245,13 @@ async def set_model_field_value(
         setattr(submodel_, field, body.value)
 
 
-def main(port: int = typer.Argument(..., help="The port to run the backend server on.")):
+def main(
+    port: int = typer.Argument(..., help="The port to run the backend server on.")
+):
     """
     Run the FlowFM-inspector backend server on the localhost:PORT.
     """
-    uvicorn.run("main:app", host="0.0.0.0", port=port, log_level="info")
+    uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")
 
 
 if __name__ == "__main__":
