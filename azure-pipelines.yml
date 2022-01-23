@@ -31,8 +31,7 @@ steps:
 - task: CmdLine@2
   inputs:
     script: |
-      poetry shell
-      python -m pyinstaller .\flowfm_inspector\main.py -y --clean --hidden-import cftime -n core
+      poetry run python -m pyinstaller .\flowfm_inspector\main.py -y --clean --hidden-import cftime -n core
     workingDirectory: '$(Build.Repository.LocalPath)\core'
   displayName: 'Package flowfm_inspector with PyInstaller'
 
