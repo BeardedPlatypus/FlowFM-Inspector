@@ -1,0 +1,47 @@
+trigger:
+  branches:
+   include:
+     - main
+  paths:
+    include:
+      - core
+
+pool:
+  vmImage: windows-2022
+strategy:
+  matrix:
+    Python39:
+      python.version: '3.9'
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(python.version)'
+  displayName: 'Use Python $(python.version)'
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      python -m pip install --upgrade pip
+      pip install poetry
+      poetry install
+    workingDirectory: '$(Build.Repository.LocalPath)\core'
+  displayName: 'Install dependencies'
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      poetry run python -m PyInstaller .\flowfm_inspector\main.py -y --clean --hidden-import cftime -n core
+    workingDirectory: '$(Build.Repository.LocalPath)\core'
+  displayName: 'Package flowfm_inspector with PyInstaller'
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.Repository.LocalPath)/core/dist/'
+    Contents: 'core/**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+  displayName: 'Copy PyInstaller results'
+
+- publish: '$(Build.ArtifactStagingDirectory)/core'
+  displayName: 'Publish package'
+  artifact: drop
