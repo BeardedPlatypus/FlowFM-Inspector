@@ -37,10 +37,9 @@ steps:
 
 - task: CopyFiles@2
   inputs:
-    SourceFolder: '$(Build.Repository.LocalPath)\core\dist'
+    SourceFolder: '$(Build.Repository.LocalPath)/core/dist/'
     Contents: 'core/**'
-    TargetFolder: '''$(Build.ArtifactStagingDirectory)'''
-    CleanTargetFolder: true
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
   displayName: 'Copy PyInstaller results'
 
 - publish: '$(Build.ArtifactStagingDirectory)/core'
