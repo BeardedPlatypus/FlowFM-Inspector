@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FlowFM-Inspector.Infrastructure\FlowFM-Inspector.Infrastructure.fsproj" />
     <ProjectReference Include="..\FlowFM-Inspector.Presentation\FlowFM-Inspector.Presentation.fsproj" />
     <ProjectReference Include="..\FlowFM-Inspector.Presentation.Views\FlowFM-Inspector.Presentation.Views.csproj" />
     <ProjectReference Include="..\FlowFM-Inspector.Presentation\FlowFM-Inspector.Presentation.fsproj" />
