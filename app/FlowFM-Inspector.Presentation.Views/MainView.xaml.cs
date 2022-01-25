@@ -4,10 +4,16 @@ using Microsoft.Web.WebView2.Core;
 
 namespace FlowFM_Inspector.Presentation.Views
 {
+    /// <summary>
+    /// <see cref="MainView"/> defines the main window of the FlowFM Inspector app.
+    /// </summary>
     public partial class MainView : MetroWindow
     {
         private const string AppName = "flowfm-inspector";
 
+        /// <summary>
+        /// Constructs a new <see cref="MainView"/>.
+        /// </summary>
         public MainView()
         {
             InitializeComponent();
@@ -24,7 +30,7 @@ namespace FlowFM_Inspector.Presentation.Views
         }
 
 
-        public void LoadWebApp()
+        private void LoadWebApp()
         {
             WebView.CoreWebView2.SetVirtualHostNameToFolderMapping(
                 hostName: AppName,
