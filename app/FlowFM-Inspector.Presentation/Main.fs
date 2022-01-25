@@ -8,12 +8,12 @@ module public Main =
 
     [<RequireQualifiedAccess>]
     type public CmdMsg =
-        | Initialise
+        | StartCore
 
     type public Msg =
         | NoOp
 
-    let public init (): Model * CmdMsg list = { todo = true }, [ CmdMsg.Initialise ]
+    let public init (): Model * CmdMsg list = { todo = true }, [ CmdMsg.StartCore ]
 
     let public update (msg: Msg) (model: Model) : Model * CmdMsg list =
         match msg with 

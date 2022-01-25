@@ -16,6 +16,7 @@ module public Core =
     /// <param name="portNumber>The port number on which the server runs.</param>
     let public Start (portNumber: uint) : unit =
         let mutable startInfo = ProcessStartInfo()
+        // TODO: This should be configured when starting the process.
         startInfo.CreateNoWindow <- false
         startInfo.WindowStyle <- ProcessWindowStyle.Hidden
         startInfo.UseShellExecute <- false
