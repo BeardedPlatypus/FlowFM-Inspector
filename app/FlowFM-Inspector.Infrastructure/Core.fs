@@ -20,7 +20,7 @@ module public Core =
         startInfo.CreateNoWindow <- false
         startInfo.WindowStyle <- ProcessWindowStyle.Hidden
         startInfo.UseShellExecute <- false
-        startInfo.FileName <- "./server/core.exe"
+        startInfo.FileName <- "./core/core.exe"
         startInfo.Arguments <- $"{portNumber}"
 
         let serverProcess = Process.Start(startInfo)
