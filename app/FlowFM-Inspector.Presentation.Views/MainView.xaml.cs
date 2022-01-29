@@ -19,7 +19,7 @@ namespace FlowFM_Inspector.Presentation.Views
             InitializeComponent();
             WebView.CoreWebView2InitializationCompleted += 
                 OnWebViewOnCoreWebView2InitializationCompleted;
-            WebView.Source = new Uri($"https://{AppName}/app/index.html");
+            WebView.Source = new Uri($"https://{AppName}/ui/index.html");
         }
 
         private void OnWebViewOnCoreWebView2InitializationCompleted(
