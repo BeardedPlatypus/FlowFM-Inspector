@@ -1,0 +1,24 @@
+{% extends "../common/Fragment.wxs.jinja" %}
+{% block FragmentContent %}
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="ProgramFiles64Folder">
+                <Directory Id="INSTALLFOLDER" Name="FlowFM-Inspector">
+                    {% for dir in directories %}
+                        {{ Directory(dir) }}
+                    {% endfor %}
+                </Directory>
+            </Directory>
+        </Directory>
+{% endblock %}
+
+{% macro Directory(dir) -%}
+    {% if dir.children %}
+        <Directory Id="{{ dir.id }}" Name="{{ dir.name }}">
+            {% for child in dir.children %}
+                {{ Directory(child) }}
+            {% endfor %}
+        </Directory>
+    {% else %}
+        <Directory Id="{{ dir.id }}" Name="{{ dir.name }}"/>
+    {% endif %}
+{%- endmacro %}
