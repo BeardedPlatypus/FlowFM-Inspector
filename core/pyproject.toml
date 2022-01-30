@@ -2,7 +2,7 @@
 name = "flowfm-inspector"
 version = "0.1.0"
 description = ""
-authors = ["tegelaer <maarten.tegelaers@deltares.nl>"]
+authors = ["BeardedPlatypus"]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.11"
