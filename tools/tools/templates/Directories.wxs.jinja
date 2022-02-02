@@ -1,10 +1,10 @@
 {% extends "Fragment.wxs.jinja" %}
-{% block FragmentContent %}
+{% block FragmentContent -%}
         <Directory Id="TARGETDIR" 
                    Name="SourceDir">
             <Directory Id="ProgramFiles64Folder">
                 <Directory Id="INSTALLFOLDER" Name="FlowFM-Inspector">
-                    {% for dir in directories %}
+                    {% for dir in directories -%}
                         {{ Directory(dir) }}
                     {% endfor %}
                 </Directory>
