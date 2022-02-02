@@ -29,6 +29,7 @@ def generate_directories_fragment(
     directories.generate_directories_fragment(base_src_folder, target_file_path)
 
 
+# Literals not yet supported
 Component = Literal["app", "core", "ui"]
 
 
@@ -37,7 +38,7 @@ def generate_component_fragment(
     base_src_folder: Path = typer.Argument(
         ..., help="The source folder in which all binaries are located"
     ),
-    component: Component = typer.Argument(
+    component: str = typer.Argument(
         ..., help="The component type for which to create the fragment."
     ),
     target_directory: Path = typer.Argument(
@@ -45,7 +46,7 @@ def generate_component_fragment(
     ),
 ):
     """
-    Generate the `<component>.wxs` fragment file.
+    Generate the `<component>.wxs` fragment.
 
     The `<component>.wxs` fragment is generated in the target_directory. If no
     target_directory is specified it will be generated in the current working
