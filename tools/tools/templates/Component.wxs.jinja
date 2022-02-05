@@ -1,3 +1,18 @@
-{% extends "Fragment.wxs.jinja" %}
-{% block FragmentContent %}
+{% extends "Fragment.wxs.jinja" -%}
+{% block FragmentContent -%}
+        <ComponentGroup Id="{{id}}">
+            {%- filter indent(12) -%}
+            {%- for ref in component_group_refs %}
+            {{ component_group(ref) }}
+            {%- endfor %}
+            {%- endfilter %}
+        </ComponentGroup>
+
+
 {% endblock %}
+
+{%- macro ComponentGroup()  %}
+{%- endmacro %}
+
+{%- macro Component() %}
+{%- endmacro %}
