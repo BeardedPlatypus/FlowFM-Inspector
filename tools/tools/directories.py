@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Collection, Iterable, Literal
 
 from tools.jinja_environment import env
+import tools.persistence as persistence
 
 
 directory_template_name: Literal["Directories.wxs.jinja"] = "Directories.wxs.jinja"
@@ -18,7 +19,7 @@ class DirectoryDescription:
 def generate_directories_fragment(base_src_path: Path, write_path: Path):
     directories = _gather_directories(base_src_path)
     content = _render(directories)
-    _write(content, write_path)
+    persistence.write(content, write_path)
 
 
 def _gather_directories(base_src_path: Path) -> Collection[DirectoryDescription]:
@@ -41,8 +42,3 @@ def _retrieve_subdirectories(p: Path) -> Iterable[Path]:
 def _render(directories: Collection[DirectoryDescription]) -> str:
     template = env.get_template(directory_template_name)
     return template.render(directories=directories)
-
-
-def _write(content: str, write_path: Path) -> None:
-    with write_path.open("w") as f:
-        f.write(content)
