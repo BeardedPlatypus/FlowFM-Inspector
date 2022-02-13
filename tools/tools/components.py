@@ -31,9 +31,17 @@ class ComponentGroupRef:
 
     @property
     def component_type(self) -> ComponentType:
-        return "component"
+        return "component_group_ref"
 
 
-def _render(component_groups: Collection[ComponentGroupElement]) -> str:
+@dataclass
+class ComponentGroup:
+    id: str
+    dir: str
+
+    children: Collection[ComponentGroupElement]
+
+
+def _render(component_groups: Collection[ComponentGroup]) -> str:
     template = env.get_template(component_template_name)
     return template.render(component_groups=component_groups)
