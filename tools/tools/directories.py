@@ -28,7 +28,8 @@ def _gather_directories(base_src_path: Path) -> Collection[DirectoryDescription]
 
 
 def _gather_directories_recursive(path: Path, parent_id: str) -> DirectoryDescription:
-    id = f"{parent_id}.{path.name}" if parent_id else path.name
+    id = f"{parent_id}.{path.name}" if parent_id else f"dir::{path.name}"
+
     subdirectories = _retrieve_subdirectories(path)
     children = [_gather_directories_recursive(p, id) for p in subdirectories]
 
