@@ -7,6 +7,7 @@ import tools.persistence as persistence
 
 
 directory_template_name: Literal["Directories.wxs.jinja"] = "Directories.wxs.jinja"
+directory_prefix: Literal["dir::"] = "dir::"
 
 
 @dataclass
@@ -28,7 +29,7 @@ def _gather_directories(base_src_path: Path) -> Collection[DirectoryDescription]
 
 
 def _gather_directories_recursive(path: Path, parent_id: str) -> DirectoryDescription:
-    id = f"{parent_id}.{path.name}" if parent_id else f"dir::{path.name}"
+    id = f"{parent_id}.{path.name}" if parent_id else f"{directory_prefix}{path.name}"
 
     subdirectories = _retrieve_subdirectories(path)
     children = [_gather_directories_recursive(p, id) for p in subdirectories]
