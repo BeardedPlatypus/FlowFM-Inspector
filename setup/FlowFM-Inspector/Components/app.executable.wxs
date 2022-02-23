@@ -6,20 +6,18 @@
         <File Id="FlowFM-Inspector.exe"
               Source="FlowFM-Inspector.exe"
               KeyPath="yes">
-
           <Shortcut Id="FlowFM-InspectorShortcut"
                     Name="FlowFM-Inspector"
                     Description="FlowFM-Inspector"
                     Directory="ProgramMenuFolder"
                     WorkingDirectory="INSTALLFOLDER"
                     Advertise="yes">
-          </Shortcut>
 
-          <Icon Id="FlowFM-Inspector.exe"
-                SourceFile="Resources\FlowFM-Inspector.ico"/>
+            <Icon Id="FlowFM-Inspector.exe"
+                  SourceFile="Resources\FlowFM-Inspector.ico"/>
+          </Shortcut>
         </File>
       </Component>
     </ComponentGroup>
-
   </Fragment>
 </Wix>
