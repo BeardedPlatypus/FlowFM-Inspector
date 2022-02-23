@@ -110,13 +110,7 @@ def _gather_component_groups_recursive(
 ) -> GatherResult:
     # Note that the ids of the component groups correspond with the folder and only
     # differ in prefix
-    if path == config.base_src_path:
-        # We set the id separately in the directory and component_group ids
-        id = ""
-    elif parent_id == "":
-        id = path.name
-    else:
-        id = f"{parent_id}.{path.name}"
+    id = _generate_id(path, parent_id, config)
 
     directory_id = (
         f"{directory_prefix}{id}" if path != config.base_src_path else "INSTALLFOLDER"
@@ -147,6 +141,18 @@ def _gather_component_groups_recursive(
     ]
 
     return GatherResult(next_node=component_group, deeper_nodes=deeper_nodes)
+
+
+def _generate_id(
+    path: Path, parent_id: str, config: FragmentGenerationConfiguration
+) -> str:
+    if path == config.base_src_path:
+        # We set the id separately in the directory and component_group ids
+        return ""
+    elif parent_id == "":
+        return path.name
+    else:
+        return f"{parent_id}.{path.name}"
 
 
 def _gather_components(
