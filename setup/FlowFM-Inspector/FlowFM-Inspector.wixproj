@@ -8,6 +8,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <OutputName>FlowFM_Inspector</OutputName>
     <OutputType>Package</OutputType>
+    <!-- WiX Component source corresponds with the bin folder of app F# project. -->
+    <WixComponentSource>$(SolutionDir)..\app\FlowFM-Inspector\bin\$(Configuration)\net6.0-windows\win10-x64\</WixComponentSource>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
