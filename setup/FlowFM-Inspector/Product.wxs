@@ -11,22 +11,26 @@
              Compressed="yes" 
              InstallScope="perMachine" />
 
-		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MajorUpgrade DowngradeErrorMessage="A newer version of FlowFM-Inspector is already installed." />
 		<MediaTemplate EmbedCab="yes" />
+
+    <WixVariable Id ="WixUILicenseRtf" Value="Resources\License.rtf"/>
 
 		<Feature Id="ProductFeature" 
              Title="FlowFM_Inspector" 
              Level="1">
-			<ComponentGroupRef Id="ProductComponents" />
+			<ComponentGroupRef Id="app::root" />
+      <ComponentGroupRef Id="core::core" />
+      <ComponentGroupRef Id="ui::ui" />
 		</Feature>
-	</Product>
 
-	<Fragment>
-		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
-			<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
-			<!-- <Component Id="ProductComponent"> -->
-				<!-- TODO: Insert files, registry keys, and other resources here. -->
-			<!-- </Component> -->
-		</ComponentGroup>
-	</Fragment>
+    <UIRef Id="WixUI_InstallDir" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <WixVariable Id="WixUIDialogBmp" Value="Resources\WixUIDialogBmp.bmp" />
+    <WixVariable Id="WixUIBannerBmp" Value="Resources\WixUIBannerBmp.bmp" />
+
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <Property Id="ARPPRODUCTICON" Value="FlowFM-Inspector.exe" />
+	</Product>
 </Wix>
