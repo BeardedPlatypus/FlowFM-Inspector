@@ -19,15 +19,22 @@
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Components\App.wxs" />
-    <Compile Include="Components\Core.wxs" />
-    <Compile Include="Components\UI.wxs" />
+    <Compile Include="Components\app.executable.wxs" />
+    <Compile Include="Components\app.wxs" />
+    <Compile Include="Components\core.wxs" />
+    <Compile Include="Components\ui.wxs" />
     <Compile Include="Directories.wxs" />
     <Compile Include="Product.wxs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Components" />
-    <Folder Include="NewFolder1\" />
+    <Folder Include="Resources" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\FlowFM-Inspector.ico" />
+    <Content Include="Resources\License.rtf" />
+    <Content Include="Resources\WixUIBannerBmp.bmp" />
+    <Content Include="Resources\WixUIDialogBmp.bmp" />
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') " />
