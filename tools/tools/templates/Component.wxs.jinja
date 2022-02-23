@@ -10,21 +10,29 @@
 {% endblock %}
 
 {%- macro ComponentGroup(obj)  %}
-<ComponentGroup Id="{{obj.id}}" Directory="{{obj.dir}}">
+{{ ComponentGroupHeader(obj) }}
     {%- filter indent(4) -%}
     {%- for child in obj.children %}
     {{ ComponentGroupElement(child) }}
     {%- endfor %}
-    {%- endfilter %}
+    {% endfilter %}
 </ComponentGroup>
 {%- endmacro %}
+
+{%- macro ComponentGroupHeader(obj) -%}
+{%- if obj.dir is not none -%}
+<ComponentGroup Id="{{obj.id}}" Directory="{{obj.dir}}">
+{%- else -%}
+<ComponentGroup Id="{{obj.id}}">
+{%- endif -%}                                
+{%- endmacro -%}
 
 {%- macro ComponentGroupElement(obj) %}
 {%- if obj.component_type == "component" -%}
     {{ Component(obj) }}
-{%- elif obj.component_type == "component_group_ref" %}
+{%- elif obj.component_type == "component_group_ref" -%}
     {{ ComponentGroupRef(obj) }}
-{%- endif %}
+{%- endif -%}
     
 {%- endmacro %}
 
