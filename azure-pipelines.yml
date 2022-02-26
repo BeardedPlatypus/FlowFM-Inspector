@@ -74,6 +74,7 @@ jobs:
       feedsToUse: 'select'
   
   - task: VSBuild@1
+    displayName: 'Build FlowFM-Installer app'
     inputs:
       solution: '$(solution)'
       configuration: '$(build_configuration)'
@@ -99,20 +100,24 @@ jobs:
 
   steps:
   - task: NodeTool@0
+    displayName: 'Install Node'
     inputs:
       versionSpec: '16.x'
   
   - task: Npm@1
+    displayName: 'Install dependencies'
     inputs:
       command: 'install'
       workingDir: '$(working_directory)'
 
   - task: CmdLine@2
+    displayName: 'Install gatsby-cli'
     inputs:
       script: 'npm i -g gatsby-cli'
       workingDirectory: '$(working_directory)'
 
   - task: CmdLine@2
+    displayName: 'Build gatsby ui'
     inputs:
       script: 'gatsby build --prefix-paths'
       workingDirectory: '$(working_directory)'
@@ -122,7 +127,7 @@ jobs:
       SourceFolder: '$(working_directory)/public/'
       Contents: '**'
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
-    displayName: 'Copy MSBuild results'
+    displayName: 'Copy Gatsby Build results'
   
   - publish: '$(Build.ArtifactStagingDirectory)'
     displayName: 'Publish package'
