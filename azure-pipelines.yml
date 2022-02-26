@@ -89,3 +89,36 @@ jobs:
   - publish: '$(Build.ArtifactStagingDirectory)'
     displayName: 'Publish package'
     artifact: app
+
+- job: FlowFM_Inspector_UI
+  pool:
+    vmImage: windows-2022
+
+  variables:
+    working_directory: '$(Build.Repository.LocalPath)ui'
+
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '6.x'
+  
+  - task: Npm@1
+    inputs:
+      command: 'install'
+      workingDir: '$(working_directory)'
+
+  - task: CmdLine@2
+    inputs:
+      script: 'gatsby build --prefix-paths'
+      workingDirectory: '$(working_directory)'
+  
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: '$(working_directory)/public/'
+      Contents: '**'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    displayName: 'Copy MSBuild results'
+  
+  - publish: '$(Build.ArtifactStagingDirectory)'
+    displayName: 'Publish package'
+    artifact: ui
