@@ -37,8 +37,9 @@
 {%- endmacro %}
 
 {%- macro Component(obj) %}
-<Component>
-    <File Source="{{obj.source}}" 
+<Component Win64="yes">
+    <File Id="{{obj.id}}"
+          Source="{{obj.source}}" 
           Name="{{obj.name}}" />
 </Component>
 {%- endmacro %}

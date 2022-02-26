@@ -10,6 +10,7 @@ from typing import (
     Set,
 )
 
+from tools.common import clean_id
 from tools.directories import directory_prefix
 from tools.jinja_environment import env
 import tools.persistence as persistence
@@ -33,6 +34,14 @@ class ComponentElement:
     @property
     def component_type(self) -> ComponentType:
         return "component"
+
+    @property
+    def id(self) -> str:
+        id = self.source.replace("/", ".")
+        id = id.replace("\\", ".")
+        id = id.replace("-", "_")
+        id = id.replace(" ", "_")
+        return id
 
 
 @dataclass
@@ -117,7 +126,7 @@ def _gather_component_groups_recursive(
     )
 
     group_id_postfix = id if id != "" else "root"
-    component_group_id = f"{config.component_group_prefix}::{group_id_postfix}"
+    component_group_id = f"{config.component_group_prefix}..{group_id_postfix}"
 
     child_components = _gather_components(path, config)
 
@@ -149,10 +158,12 @@ def _generate_id(
     if path == config.base_src_path:
         # We set the id separately in the directory and component_group ids
         return ""
-    elif parent_id == "":
-        return path.name
+
+    name = clean_id(path.name)
+    if parent_id == "":
+        return name
     else:
-        return f"{parent_id}.{path.name}"
+        return f"{parent_id}.{name}"
 
 
 def _gather_components(
