@@ -51,3 +51,43 @@ jobs:
   - publish: '$(Build.ArtifactStagingDirectory)/core'
     displayName: 'Publish package'
     artifact: core
+
+- job: FlowFM-Inspector_App
+  pool:
+    vmImage: windows-2022
+
+  variables:
+    solution: '**/app/FlowFM-Inspector.sln'
+    build_configuration: 'Release'
+    build_architecture: 'x64'
+
+  steps:
+  - task: NuGetToolInstaller@1
+    displayName: 'NuGet - Install'
+    inputs:
+      versionSpec: 6.x
+  
+  - task: NuGetCommand@2
+    displayName: 'NuGet - Restore Packages'
+    inputs:
+      command: 'restore'
+      restoreSolution: '$(solution)'
+      feedsToUse: 'select'
+  
+  - task: VSBuild@1
+    inputs:
+      solution: '$(solution)'
+      platform: '$(build_architecture)'
+      configuration: '$(build_configuration)'
+      msbuildArchitecture: 'x64'
+  
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: '$(Build.Repository.LocalPath)/app/FlowFM-Inspector/$(build_configuration)/net6.0-windows/win10-x64/'
+      Contents: '**'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    displayName: 'Copy MSBuild results'
+  
+  - publish: '$(Build.ArtifactStagingDirectory)'
+    displayName: 'Publish package'
+    artifact: app
