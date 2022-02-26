@@ -19,9 +19,9 @@
 		<Feature Id="ProductFeature" 
              Title="FlowFM_Inspector" 
              Level="1">
-			<ComponentGroupRef Id="app::root" />
-      <ComponentGroupRef Id="core::core" />
-      <ComponentGroupRef Id="ui::ui" />
+			<ComponentGroupRef Id="app..root" />
+      <ComponentGroupRef Id="core..core" />
+      <ComponentGroupRef Id="ui..ui" />
 		</Feature>
 
     <UIRef Id="WixUI_InstallDir" />
