@@ -95,7 +95,7 @@ jobs:
     vmImage: windows-2022
 
   variables:
-    working_directory: '$(Build.Repository.LocalPath)ui'
+    working_directory: '$(Build.Repository.LocalPath)\ui'
 
   steps:
   - task: NodeTool@0
