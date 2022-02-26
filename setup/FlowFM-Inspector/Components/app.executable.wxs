@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 	<Fragment>
-    <ComponentGroup Id="app::executable" Directory="INSTALLFOLDER">
-      <Component>
-        <File Id="FlowFM-Inspector.exe"
+    <ComponentGroup Id="app..executable" Directory="INSTALLFOLDER">
+      <Component Win64="yes">
+        <File Id="FlowFM_Inspector.exe"
               Source="FlowFM-Inspector.exe"
               KeyPath="yes">
-          <Shortcut Id="FlowFM-InspectorShortcut"
+          <Shortcut Id="FlowFM_InspectorShortcut"
                     Name="FlowFM-Inspector"
                     Description="FlowFM-Inspector"
                     Directory="ProgramMenuFolder"
                     WorkingDirectory="INSTALLFOLDER"
                     Advertise="yes">
 
-            <Icon Id="FlowFM-Inspector.exe"
+            <Icon Id="FlowFM_Inspector.exe"
                   SourceFile="Resources\FlowFM-Inspector.ico"/>
           </Shortcut>
         </File>
