@@ -18,6 +18,9 @@ def generate_directories_fragment(
     target_directory: Path = typer.Option(
         Path.cwd(), help="The target directory to which the `Directory.wxs` is written"
     ),
+    excluded_directories: Optional[List[Path]] = typer.Option(
+        None, help="Any excluded directories."
+    ),
 ):
     """
     Generate the `Directories.wxs` fragment.
@@ -26,8 +29,19 @@ def generate_directories_fragment(
     target_directory is specified it will be generated in the current working
     directory.
     """
+    if excluded_directories is None:
+        excluded_directories = []
+
     target_file_path = target_directory / "Directories.wxs"
-    directories.generate_directories_fragment(base_src_folder, target_file_path)
+    excluded_directories_set = {base_src_folder / p for p in excluded_directories}
+
+    config = directories.DirectoriesGenerationConfiguration(
+        base_src_path=base_src_folder,
+        write_path=target_file_path,
+        excluded_paths=excluded_directories_set,
+    )
+
+    directories.generate_directories_fragment(config)
 
 
 # Literals not yet supported
