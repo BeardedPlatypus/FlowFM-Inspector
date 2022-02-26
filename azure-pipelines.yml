@@ -4,44 +4,88 @@ trigger:
      - main
   paths:
     include:
+      - app
       - core
+      - ui
+      - setup
+      - tools
 
-pool:
-  vmImage: windows-2022
-strategy:
-  matrix:
-    Python39:
-      python.version: '3.9'
+jobs:
+- job: FlowFM_Inspector_Core
+  pool:
+    vmImage: windows-2022
+  strategy:
+    matrix:
+      Python39:
+        python.version: '3.9'
 
-steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '$(python.version)'
-  displayName: 'Use Python $(python.version)'
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '$(python.version)'
+    displayName: 'Use Python $(python.version)'
 
-- task: CmdLine@2
-  inputs:
-    script: |
-      python -m pip install --upgrade pip
-      pip install poetry
-      poetry install
-    workingDirectory: '$(Build.Repository.LocalPath)\core'
-  displayName: 'Install dependencies'
+  - task: CmdLine@2
+    inputs:
+      script: |
+        python -m pip install --upgrade pip
+        pip install poetry
+        poetry install
+      workingDirectory: '$(Build.Repository.LocalPath)\core'
+    displayName: 'Install dependencies'
 
-- task: CmdLine@2
-  inputs:
-    script: |
-      poetry run python -m PyInstaller .\flowfm_inspector\main.py -y --clean --hidden-import cftime -n core
-    workingDirectory: '$(Build.Repository.LocalPath)\core'
-  displayName: 'Package flowfm_inspector with PyInstaller'
+  - task: CmdLine@2
+    inputs:
+      script: |
+        poetry run python -m PyInstaller .\flowfm_inspector\main.py -y --clean --hidden-import cftime -n core
+      workingDirectory: '$(Build.Repository.LocalPath)\core'
+    displayName: 'Package flowfm_inspector with PyInstaller'
 
-- task: CopyFiles@2
-  inputs:
-    SourceFolder: '$(Build.Repository.LocalPath)/core/dist/'
-    Contents: 'core/**'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
-  displayName: 'Copy PyInstaller results'
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: '$(Build.Repository.LocalPath)/core/dist/'
+      Contents: 'core/**'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    displayName: 'Copy PyInstaller results'
 
-- publish: '$(Build.ArtifactStagingDirectory)/core'
-  displayName: 'Publish package'
-  artifact: drop
+  - publish: '$(Build.ArtifactStagingDirectory)/core'
+    displayName: 'Publish package'
+    artifact: core
+
+- job: FlowFM_Inspector_App
+  pool:
+    vmImage: windows-2022
+
+  variables:
+    solution: '**/app/FlowFM-Inspector.sln'
+    build_configuration: 'Release'
+
+  steps:
+  - task: NuGetToolInstaller@1
+    displayName: 'NuGet - Install'
+    inputs:
+      versionSpec: 6.x
+  
+  - task: NuGetCommand@2
+    displayName: 'NuGet - Restore Packages'
+    inputs:
+      command: 'restore'
+      restoreSolution: '$(solution)'
+      feedsToUse: 'select'
+  
+  - task: VSBuild@1
+    inputs:
+      solution: '$(solution)'
+      configuration: '$(build_configuration)'
+      msbuildArchitecture: 'x64'
+  
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: '$(Build.Repository.LocalPath)/app/FlowFM-Inspector/bin/$(build_configuration)/net6.0-windows/win10-x64/'
+      Contents: '**'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    displayName: 'Copy MSBuild results'
+  
+  - publish: '$(Build.ArtifactStagingDirectory)'
+    displayName: 'Publish package'
+    artifact: app
