@@ -109,6 +109,11 @@ jobs:
 
   - task: CmdLine@2
     inputs:
+      script: 'npm i -g gatsby-cli'
+      workingDirectory: '$(working_directory)'
+
+  - task: CmdLine@2
+    inputs:
       script: 'gatsby build --prefix-paths'
       workingDirectory: '$(working_directory)'
   
