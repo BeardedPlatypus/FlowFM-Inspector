@@ -81,7 +81,7 @@ jobs:
   
   - task: CopyFiles@2
     inputs:
-      SourceFolder: '$(Build.Repository.LocalPath)/app/FlowFM-Inspector/$(build_configuration)/net6.0-windows/win10-x64/'
+      SourceFolder: '$(Build.Repository.LocalPath)/app/FlowFM-Inspector/bin/$(build_configuration)/net6.0-windows/win10-x64/'
       Contents: '**'
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
     displayName: 'Copy MSBuild results'
