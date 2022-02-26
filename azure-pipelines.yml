@@ -11,7 +11,7 @@ trigger:
       - tools
 
 jobs:
-- job: FlowFM-Inspector_Core
+- job: FlowFM_Inspector_Core
   pool:
     vmImage: windows-2022
   strategy:
@@ -52,7 +52,7 @@ jobs:
     displayName: 'Publish package'
     artifact: core
 
-- job: FlowFM-Inspector_App
+- job: FlowFM_Inspector_App
   pool:
     vmImage: windows-2022
 
