@@ -203,7 +203,8 @@ jobs:
     displayName: 'Build - Executables'
     inputs:
       solution: '$(solution)'
-      configuration: '$(buildConfiguration)'
+      configuration: '$(build_configuration)'
+      platform: 'x64'
       msbuildArchitecture: 'x64'
 
   - task: CopyFiles@2
