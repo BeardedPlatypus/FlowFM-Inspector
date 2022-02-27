@@ -195,7 +195,7 @@ jobs:
         poetry run python .\tools\main.py generate-directories-fragment "$(working_directory)" --target-directory "$(setup_directory)" --excluded-directories "runtimes"
         poetry run python .\tools\main.py generate-component-fragment "$(working_directory)" "core" --included-paths "core" --target-directory "$(setup_directory)\Components"
         poetry run python .\tools\main.py generate-component-fragment "$(working_directory)" "ui" --included-paths "ui" --target-directory "$(setup_directory)\Components"
-        poetry run python .\tools\main.py generate-component-fragment "$(working_directory)" "app" --included-paths "." --excluded-paths "ui" --excluded-paths "core" --excluded-paths "runtimes" --target-directory "$(setup_directory)\Components" --additional-component-groups-refs "app..exutecutable" --excluded-paths "FlowFM-Inspector.exe"                                                                                                                                            
+        poetry run python .\tools\main.py generate-component-fragment "$(working_directory)" "app" --included-paths "." --excluded-paths "ui" --excluded-paths "core" --excluded-paths "runtimes" --target-directory "$(setup_directory)\Components" --additional-component-groups-refs "app..executable" --excluded-paths "FlowFM-Inspector.exe"                                                                                                                                            
       workingDirectory: '$(Build.Repository.LocalPath)\tools'
     displayName: 'Generate the required fragments'
 
