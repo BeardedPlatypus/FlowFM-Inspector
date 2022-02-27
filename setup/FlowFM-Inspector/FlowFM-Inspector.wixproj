@@ -9,7 +9,8 @@
     <OutputName>FlowFM_Inspector</OutputName>
     <OutputType>Package</OutputType>
     <!-- WiX Component source corresponds with the bin folder of app F# project. -->
-    <WixComponentSource>$(SolutionDir)..\app\FlowFM-Inspector\bin\$(Configuration)\net6.0-windows\win10-x64\</WixComponentSource>
+    <WixComponentSourceDev>$(SolutionDir)..\app\FlowFM-Inspector\bin\$(Configuration)\net6.0-windows\win10-x64\</WixComponentSourceDev>
+    <WixComponentSourceCI>$(SolutionDir)..\build\</WixComponentSourceCI>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <DefineConstants>Debug</DefineConstants>
@@ -29,7 +30,10 @@
     <Compile Include="Product.wxs" />
   </ItemGroup>
   <ItemGroup>
-    <BindInputPaths Include="$(WixComponentSource)">
+    <BindInputPaths Include="$(WixComponentSourceDev)">
+      <InProject>false</InProject>
+    </BindInputPaths>
+    <BindInputPaths Include="$(WixComponentSourceCI)">
       <InProject>false</InProject>
     </BindInputPaths>
   </ItemGroup>
