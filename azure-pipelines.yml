@@ -132,3 +132,88 @@ jobs:
   - publish: '$(Build.ArtifactStagingDirectory)'
     displayName: 'Publish package'
     artifact: ui
+
+- job: FlowFM_Inspector_Installer
+  pool:
+    vmImage: windows-2022
+
+  strategy:
+    matrix:
+      Python39:
+        python.version: '3.9'
+
+  variables:
+    working_directory: '$(Build.Repository.LocalPath)\build'
+    setup_directory: '$(Build.Repository.LocalPath)\setup\FlowFM-Inspector'
+    solution: '**/setup/FlowFM-Inspector-setup.sln'
+    build_configuration: 'Release'
+
+  dependsOn:
+    - FlowFM_Inspector_Core
+    - FlowFM_Inspector_UI
+    - FlowFM_Inspector_App
+
+  steps:
+  - task: DownloadBuildArtifacts@1
+    inputs:
+      buildType: 'current'
+      artifactName: 'app'
+      downloadType: 'single'
+      downloadPath: '$(working_directory)'
+
+  - task: DownloadBuildArtifacts@1
+    inputs:
+      buildType: 'current'
+      artifactName: 'ui'
+      downloadType: 'single'
+      downloadPath: '$(working_directory)\ui'
+
+  - task: DownloadBuildArtifacts@1
+    inputs:
+      buildType: 'current'
+      artifactName: 'core'
+      downloadType: 'single'
+      downloadPath: '$(working_directory)\core'
+
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '$(python.version)'
+    displayName: 'Use Python $(python.version)'
+
+  - task: CmdLine@2
+    inputs:
+      script: |
+        python -m pip install --upgrade pip
+        pip install poetry
+        poetry install
+      workingDirectory: '$(Build.Repository.LocalPath)\tools'
+    displayName: 'Install Python dependencies'
+
+  - task: CmdLine@2
+    inputs:
+      script: |
+        poetry run python .\tools\main.py generate-directories-fragment "$(working_directory)" --target-directory "$(setup_directory)" --excluded-directories "runtimes"
+        poetry run python .\tools\main.py generate-component-fragment "$(working_directory)" "core" --included-paths "core" --target-directory "$(setup_directory)\Components"
+        poetry run python .\tools\main.py generate-component-fragment "$(working_directory)" "ui" --included-paths "ui" --target-directory "$(setup_directory)\Components"
+        poetry run python .\tools\main.py generate-component-fragment "$(working_directory)" "app" --included-paths "." --excluded-paths "ui" --excluded-paths "core" --excluded-paths "runtimes" --target-directory "$(setup_directory)\Components" --additional-component-groups-refs "app..exutecutable" --excluded-paths "FlowFM-Inspector.exe"                                                                                                                                            
+      workingDirectory: '$(Build.Repository.LocalPath)\tools'
+    displayName: 'Generate the required fragments'
+
+  - task: VSBuild@1
+    displayName: 'Build - Executables'
+    inputs:
+      solution: '$(solution)'
+      platform: 'x64'
+      configuration: '$(buildConfiguration)'
+      msbuildArchitecture: 'x64'
+
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: '$(setup_directory)\bin'
+      Contents: '**'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    displayName: 'Copy Gatsby Build results'
+  
+  - publish: '$(Build.ArtifactStagingDirectory)'
+    displayName: 'Publish package'
+    artifact: msi
