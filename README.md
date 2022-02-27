@@ -1,6 +1,7 @@
-<p align='center'><img align='center' src='https://github.com/BeardedPlatypus/media-storage/blob/main/FlowFM-Inspector/hydro.png?raw=true' width='35%'></p>
+<p align='center'><img align='center' src='https://github.com/BeardedPlatypus/media-storage/blob/main/FlowFM-Inspector/icon.png?raw=true' width='35%'></p>
 
 # FlowFM Inspector - Inspect and modify D-FlowFM files
+[![Build Status](https://dev.azure.com/mwtegelaers/FlowFM%20Inspector/_apis/build/status/BeardedPlatypus.FlowFM-Inspector?branchName=refs%2Fpull%2F9%2Fmerge)](https://dev.azure.com/mwtegelaers/FlowFM%20Inspector/_build/latest?definitionId=34&branchName=refs%2Fpull%2F9%2Fmerge)
 
 The FlowFM Inspector is a small tool used to load, inspect, and modify
 [Delft3D Flexible Mesh Suite files][D-FlowFM]. It leverages the [HYDROLIB-core][HYDROLIB]
@@ -26,10 +27,19 @@ used as a reference.
 
 ## Installation
 
+Dedicated msi's are provided for the FlowFM-Inspector can be build:
+
+* Latest release: *coming soon*
+* Development: [Azure Devops Pipeline][AzureDevOps]
+
+[AzureDevOps]: https://dev.azure.com/mwtegelaers/FlowFM%20Inspector/_build?definitionId=34
+
 ## Features
+
+## Gallery
 
 ## References
 
 ## Attribution
 
-- Icon made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+- Icon is based on an icon provided by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
