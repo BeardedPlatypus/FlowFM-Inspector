@@ -203,7 +203,6 @@ jobs:
     displayName: 'Build - Executables'
     inputs:
       solution: '$(solution)'
-      platform: 'x64'
       configuration: '$(buildConfiguration)'
       msbuildArchitecture: 'x64'
 
@@ -212,8 +211,8 @@ jobs:
       SourceFolder: '$(setup_directory)\bin'
       Contents: '**'
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
-    displayName: 'Copy Gatsby Build results'
+    displayName: 'Copy MSI'
   
   - publish: '$(Build.ArtifactStagingDirectory)'
-    displayName: 'Publish package'
+    displayName: 'Publish msi'
     artifact: msi
