@@ -14,6 +14,8 @@ The prebuilt MSIs can be found at the following locations:
 * Latest release: *coming soon*
 * Development: [Azure Devops Pipeline][AzureDevOps]
 
+[AzureDevOps]: https://dev.azure.com/mwtegelaers/FlowFM%20Inspector/_build?definitionId=34
+
 ## Building the MSI locally
 
 The msi can be build locally by running the following steps:
