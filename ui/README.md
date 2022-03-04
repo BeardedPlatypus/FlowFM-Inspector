@@ -1,1 +1,1 @@
-# ui - Gatsby / React front-end
+# UI - Gatsby / React front-end
