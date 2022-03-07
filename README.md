@@ -38,6 +38,8 @@ Dedicated msi's are provided for the FlowFM-Inspector can be build:
 
 ## Gallery
 
+## Architecture
+
 ## References
 
 ## Attribution
