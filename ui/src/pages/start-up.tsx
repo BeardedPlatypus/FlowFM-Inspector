@@ -188,13 +188,44 @@ const RecentProjects: React.FC<RecentProjectsProps> = (props: RecentProjectsProp
     )
 }
 
+interface CreateNewProjectProps {
+    opacity?: number
+}
+
+const CreateNewProject: React.FC<CreateNewProjectProps> = (props: CreateNewProjectProps) => {
+    const opacityBox = props.opacity != null ? props.opacity : 1.0;
+
+    return (
+        <div className="box" style={{ height: "100%", opacity: opacityBox }}>
+            <h1 className="title is-4">Create new project:</h1>
+
+            <div className="field">
+                <label className="label">Username</label>
+                <div className="control has-icons-left has-icons-right">
+                    <input className="input is-success" type="text" placeholder="Text input" value="bulma">
+                        <span className="icon is-small is-left">
+                            <i className="fas fa-user"></i>
+                        </span>
+                        <span className="icon is-small is-right">
+                            <i className="fas fa-check"></i>
+                        </span>
+                    </input>
+                </div>
+                <p className="help is-success">This username is available</p>
+            </div>
+        </div>
+    )
+}
+
+
 const StartUp: React.FC<PageProps> = () => {
     return (
         <div style={{ height: "100vh", width: "100vw" }}>
             <section className="section" style={{ height: "100%" }}>
                 <div className="columns is-flex is-align-content-stretch" style={{ height: "100%" }}>
                     <div className="column is-three-quarters" style={{ height: "100%" }}>
-                        <RecentProjects />
+                        {/*<RecentProjects />*/}
+                        <CreateNewProject />
                     </div>
                     <div className="column" style={{ height: "100%" }}>
                         <div className="box" style={{ height: "100%" }}>
